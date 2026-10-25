@@ -53,21 +53,25 @@ summary span{display:block;font-weight:400;font-size:12px;color:var(--mut)}
 .it{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--line)}
 .it small{color:var(--mut);display:block}
 .pr{font-weight:650;white-space:nowrap}
-input{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px}
+input,textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px}
 .btns{display:flex;gap:8px;margin-top:10px}
 .btns button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:inherit;cursor:pointer}
 .btns .pri{background:var(--ac);color:#fff;border-color:var(--ac)}
+.note{font-size:13px;margin-top:6px}
+.cal{display:block;text-align:center;margin-top:10px;color:var(--ac);font-size:14px}
+#rem .pair{align-items:center}
 .hint{font-size:12px;color:var(--mut);margin-top:16px;text-align:center}
 </style>
 </head>
 <body>
 <main>
+<div id="rem"></div>
 <div class="top"><h1 id="wk"></h1><button class="wkb" id="wb"></button></div>
 <div class="date" id="dt"></div>
 <div class="chips" id="chips"></div>
 <div id="list"></div>
 <div id="lunch"></div>
-<div class="hint">Нажмите на пару, чтобы добавить замену</div>
+<div class="hint">Нажмите на пару: замена, заметка, напоминание</div>
 </main>
 <script>
 // [предмет, преподаватель, кабинет, неделя: "в" верхняя / "н" нижняя / пусто — каждую]
@@ -102,6 +106,7 @@ if(base.getDay()===0)base.setDate(base.getDate()+1);
 var mon=new Date(base);mon.setDate(base.getDate()-(base.getDay()-1));
 var ANCHOR=new Date(2026,9,19); // неделя меняется со вторника: 20–26.10.2026 — нижняя, 27.10–02.11 — верхняя
 var sel=base.getDay(),subs=ld("tk412_subs",{}),flip=ld("tk412_flip",0);
+var API="",GROUP="ТК412",remote=ld("tk412_remote",{}),notes=ld("tk412_notes",{}),seen=ld("tk412_seen",{});
 function dateOf(w){var d=new Date(mon);d.setDate(mon.getDate()+w-1);return d}
 function upper(d){var s=new Date(d);s.setDate(s.getDate()-1);s.setDate(s.getDate()-(s.getDay()+6)%7);return(((Math.round((s-ANCHOR)/6048e5)+flip)%2)+2)%2===1}
 function render(){
@@ -113,36 +118,58 @@ function render(){
   var c="";for(var i=1;i<=6;i++){c+='<button class="chip'+(i===sel?" on":"")+(key(dateOf(i))===key(now)&&i!==sel?" td":"")+'" data-d="'+i+'">'+SH[i-1]+"</button>"}
   var ch=document.getElementById("chips");ch.innerHTML=c;
   ch.onclick=function(e){var b=e.target.closest("[data-d]");if(b){sel=+b.dataset.d;render()}};
-  var day={},T=sel===6?TS:TW,ds=subs[k]||{},mins=now.getHours()*60+now.getMinutes();
+  var day={},T=sel===6?TS:TW,ds={},mins=now.getHours()*60+now.getMinutes();
   Object.keys(S[sel]).forEach(function(n){var a=S[sel][n].filter(function(x){return!x[3]||x[3]===w});if(a.length)day[n]=a});
-  var all=Object.keys(day).concat(Object.keys(ds)).map(Number),h="";
-  if(!all.length){h='<div class="free">Пар нет</div>'}
+  var rm=remote[k]||{};(rm.cancel||[]).forEach(function(n){if(day[n])ds[n]="Пары нет"});Object.keys(rm.pairs||{}).forEach(function(n){ds[n]=rm.pairs[n]});Object.assign(ds,subs[k]||{});
+  var all=Object.keys(day).concat(Object.keys(ds)).map(Number),h=rm.only?'<div class="pair sub"><div class="body"><span class="tag">Замена на день</span><div class="s">Только: '+esc(rm.only)+"</div></div></div>":"";
+  if(!all.length){h+='<div class="free">Пар нет</div>'}
   else{
     for(var n=Math.min.apply(null,all);n<=Math.max.apply(null,all);n++){
       var it=day[n],sb=ds[n],tt=T[n]?'<div class="tm">'+hm(T[n][0])+"–"+hm(T[n][1])+"</div>":"";
       var cur=isToday&&T[n]&&mins>=T[n][0]&&mins<T[n][1]?" now":"";
       if(sb){
-        h+='<div class="pair sub'+cur+'" data-n="'+n+'"><div class="n">'+n+'</div><div class="body">'+tt+'<span class="tag">Замена</span><div class="s">'+esc(sb)+"</div>"+(it?'<div class="old">'+esc(it.map(function(x){return x[0]}).join(", "))+"</div>":"")+"</div></div>";
+        h+='<div class="pair sub'+cur+'" data-n="'+n+'"><div class="n">'+n+'</div><div class="body">'+tt+'<span class="tag">Замена</span><div class="s">'+esc(sb)+"</div>"+(it?'<div class="old">'+esc(it.map(function(x){return x[0]}).join(", "))+"</div>":"")+noteHtml(k,n)+"</div></div>";
       }else if(it){
         h+='<div class="pair'+cur+'" data-n="'+n+'"><div class="n">'+n+'</div><div class="body">'+tt;
         it.forEach(function(x){h+='<div class="row"><div><div class="s">'+esc(x[0])+'</div><div class="t">'+esc(x[1])+'</div></div><div class="r">'+esc(x[2])+"</div></div>"});
-        h+="</div></div>";
+        h+=noteHtml(k,n)+"</div></div>";
       }else h+='<div class="pair gap"><div class="n">'+n+'</div><div class="body t">окно</div></div>';
     }
   }
   var L=document.getElementById("list");L.innerHTML=h;
   L.onclick=function(e){var p=e.target.closest("[data-n]");if(p)editSub(+p.dataset.n)};
-  renderLunch();
+  renderLunch();remind();
 }
+function noteHtml(k,n){var x=notes[k+"|"+n];return x?'<div class="note">📝 '+esc(x.t||"Напоминание")+(x.at?" · ⏰ "+esc(x.at.replace("T"," ")):"")+"</div>":""}
+function pad(x){return("0"+x).slice(-2)}
+function fmtD(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00"}
 function editSub(n){
-  var k=key(dateOf(sel)),cur=(subs[k]||{})[n]||"",L=document.getElementById("list");
+  var k=key(dateOf(sel)),cur=(subs[k]||{})[n]||"",nt=notes[k+"|"+n]||{t:"",at:""},L=document.getElementById("list");
   var box=document.createElement("div");box.className="box";
-  box.innerHTML='<h2>Замена на '+n+' паре</h2><input placeholder="Например: ТЭС, каб. 406, или пары нет"><div class="btns"><button class="x">Убрать</button><button class="pri">Сохранить</button></div>';
+  box.innerHTML='<h2>'+n+' пара</h2><input class="si" placeholder="Замена: например, ТЭС, каб. 406, или пары нет"><textarea class="ni" rows="2" placeholder="Заметка к паре" style="margin-top:8px"></textarea><div class="t" style="margin:8px 0 4px">Напомнить</div><input type="datetime-local" class="ai"><a class="cal" target="_blank" rel="noopener" style="display:none">Добавить напоминание в календарь</a><div class="btns"><button class="x">Убрать</button><button class="pri">Сохранить</button></div>';
   L.querySelector('[data-n="'+n+'"]').after(box);
-  var inp=box.querySelector("input");inp.value=cur;inp.focus();L.onclick=null;
-  function done(v){subs[k]=subs[k]||{};if(v)subs[k][n]=v;else delete subs[k][n];sv("tk412_subs",subs);render()}
-  box.querySelector(".pri").onclick=function(){done(inp.value.trim())};
-  box.querySelector(".x").onclick=function(){done("")};
+  var si=box.querySelector(".si"),ni=box.querySelector(".ni"),ai=box.querySelector(".ai"),cal=box.querySelector(".cal");
+  si.value=cur;ni.value=nt.t;ai.value=nt.at||"";L.onclick=null;
+  function link(){var v=ai.value;if(!v){cal.style.display="none";return}var a=new Date(v),e=new Date(+a+9e5);cal.href="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("ТК 412, "+n+" пара: "+(ni.value||"напоминание"))+"&dates="+fmtD(a)+"/"+fmtD(e)+"&ctz=Europe%2FMinsk";cal.style.display="block"}
+  ai.onchange=link;ni.oninput=link;link();
+  function done(clear){
+    var v=clear?"":si.value.trim(),t=clear?"":ni.value.trim(),q=k+"|"+n;
+    subs[k]=subs[k]||{};if(v)subs[k][n]=v;else delete subs[k][n];
+    if(t||(!clear&&ai.value)){notes[q]={t:t,at:ai.value};delete seen[q]}else delete notes[q];
+    sv("tk412_subs",subs);sv("tk412_notes",notes);sv("tk412_seen",seen);render()}
+  box.querySelector(".pri").onclick=function(){done(false)};
+  box.querySelector(".x").onclick=function(){done(true)};
+}
+function remind(){
+  var h="",now=new Date();
+  Object.keys(notes).forEach(function(q){var x=notes[q],t=x.at&&new Date(x.at);
+    if(t&&t<=now&&now-t<1728e5&&!seen[q])h+='<div class="pair sub"><div class="body"><span class="tag">Напоминание · '+q.split("|")[1]+' пара</span><div class="s">'+esc(x.t||"Заметка")+'</div></div><button class="wkb" data-r="'+q+'">Ок</button></div>'});
+  var el=document.getElementById("rem");el.innerHTML=h;
+  el.onclick=function(e){var b=e.target.closest("button[data-r]");if(b){seen[b.dataset.r]=1;sv("tk412_seen",seen);remind()}};
+}
+function sync(){
+  if(!API)return;
+  fetch(API+"/subs?g="+encodeURIComponent(GROUP)).then(function(r){return r.json()}).then(function(j){remote=j;sv("tk412_remote",j);render()}).catch(function(){});
 }
 function renderLunch(){
   var el=document.getElementById("lunch");
@@ -151,7 +178,9 @@ function renderLunch(){
   LUNCH.forEach(function(s){h+='<div class="sec">'+s[0]+"</div>";s[1].forEach(function(x){h+='<div class="it"><div>'+esc(x[0])+"<small>"+esc(x[1])+'</small></div><div class="pr">'+x[2]+" р.</div></div>"})});
   el.innerHTML=h+"</details>";
 }
-render();
+render();sync();
+document.addEventListener("visibilitychange",function(){if(!document.hidden){sync();remind()}});
+setInterval(remind,60000);
 </script>
 <script>
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
