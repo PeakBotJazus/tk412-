@@ -106,7 +106,7 @@ if(base.getDay()===0)base.setDate(base.getDate()+1);
 var mon=new Date(base);mon.setDate(base.getDate()-(base.getDay()-1));
 var ANCHOR=new Date(2026,9,19); // неделя меняется со вторника: 20–26.10.2026 — нижняя, 27.10–02.11 — верхняя
 var sel=base.getDay(),subs=ld("tk412_subs",{}),flip=ld("tk412_flip",0);
-var API="",GROUP="ТК412",remote=ld("tk412_remote",{}),notes=ld("tk412_notes",{}),seen=ld("tk412_seen",{});
+var API="https://tk412.amogusovick.workers.dev",GROUP="ТК412",remote=ld("tk412_remote",{}),notes=ld("tk412_notes",{}),seen=ld("tk412_seen",{});
 function dateOf(w){var d=new Date(mon);d.setDate(mon.getDate()+w-1);return d}
 function upper(d){var s=new Date(d);s.setDate(s.getDate()-1);s.setDate(s.getDate()-(s.getDay()+6)%7);return(((Math.round((s-ANCHOR)/6048e5)+flip)%2)+2)%2===1}
 function render(){
