@@ -67,19 +67,23 @@ span.wkb{cursor:default}
 .link small{color:var(--mut);font-size:12px}
 .link .go{margin-left:auto;color:var(--mut);font-size:18px}
 .link+.link{margin-top:8px}
+.tr{display:flex;gap:6px;align-items:center}
+.seg{display:flex;gap:6px}
+.opt{display:flex;gap:12px;align-items:flex-start;margin-top:16px;cursor:pointer}
+input[type=checkbox]{width:22px;height:22px;padding:0;margin:0;flex:none;accent-color:var(--ac)}
 .hint{font-size:12px;color:var(--mut);margin-top:16px;text-align:center}
 </style>
 </head>
 <body>
 <main>
 <div id="rem"></div>
-<div class="top"><h1 id="wk"></h1><span class="wkb" id="wb"></span></div>
+<div class="top"><h1 id="wk"></h1><div class="tr"><span class="wkb" id="wb"></span><button class="wkb" id="gear" aria-label="Настройки">⚙</button></div></div>
 <div class="date" id="dt"></div>
+<div id="set"></div>
 <div class="chips" id="chips"></div>
 <div id="list"></div>
 <div id="lunch"></div>
 <a class="link" href="http://sdo.bsac.by" target="_blank" rel="noopener"><div class="ic">🎓</div><div><b>Платформа удалённого обучения</b><small>СДО Академии связи · sdo.bsac.by</small></div><div class="go">↗</div></a>
-<a class="link" href="http://86.57.181.226/login/index.php" target="_blank" rel="noopener"><div class="ic">📚</div><div><b>Система Moodle</b><small>Витебский филиал · запасной вход</small></div><div class="go">↗</div></a>
 <div class="hint">Нажмите на пару: замена, заметка, напоминание</div>
 </main>
 <script>
@@ -94,6 +98,7 @@ var S={
 };
 // время пар в минутах от полуночи
 var TW={1:[510,610],2:[620,720],3:[765,865],4:[875,975],5:[985,1085],6:[1095,1195]};
+var SMG={2:[565,620],4:[565,620],6:[825,870]}; // СМГ №3: вт, чт 9:25–10:20, сб 13:45–14:30
 var TS={1:[510,600],2:[615,710],3:[720,815],4:[825,920]};
 // снимок меню с clever.by от 22.10.2026: [раздел, [[блюдо, выход, цена]]]
 var LUNCH0=[
@@ -116,7 +121,8 @@ var now=new Date(),base=new Date(now.getFullYear(),now.getMonth(),now.getDate())
 if(base.getDay()===0)base.setDate(base.getDate()+1);
 var mon=new Date(base);mon.setDate(base.getDate()-(base.getDay()-1));
 var ANCHOR=new Date(2026,9,19); // неделя меняется со вторника: 20–26.10.2026 — нижняя, 27.10–02.11 — верхняя
-var sel=base.getDay(),subs=ld("tk412_subs",{}),flip=0;
+var sel=base.getDay(),subs=ld("tk412_subs",{}),flip=0,cfg=ld("tk412_cfg",{theme:"auto",smg:false}),setOpen=false;
+applyTheme();
 var API="https://tk412.amogusovick.workers.dev",GROUP="ТК412",remote=ld("tk412_remote",{}),notes=ld("tk412_notes",{}),seen=ld("tk412_seen",{});
 function dateOf(w){var d=new Date(mon);d.setDate(mon.getDate()+w-1);return d}
 function upper(d){var s=new Date(d);s.setDate(s.getDate()-1);s.setDate(s.getDate()-(s.getDay()+6)%7);return(((Math.round((s-ANCHOR)/6048e5)+flip)%2)+2)%2===1}
@@ -124,7 +130,7 @@ function render(){
   var d=dateOf(sel),k=key(d),isToday=k===key(now),up=upper(d),w=up?"в":"н";
   document.getElementById("wk").textContent=isToday?"Сегодня":(k===key(base)&&base.getDay()!==now.getDay()?"Завтра":DN[sel]);
   document.getElementById("dt").textContent=DN[sel]+", "+d.getDate()+" "+MO[d.getMonth()];
-  var wb=document.getElementById("wb");wb.textContent=up?"Верхняя неделя":"Нижняя неделя";
+  var wb=document.getElementById("wb");wb.textContent=up?"Верхняя неделя":"Нижняя неделя";renderSet();document.getElementById("gear").onclick=function(){setOpen=!setOpen;render()};
   var c="";for(var i=1;i<=6;i++){c+='<button class="chip'+(i===sel?" on":"")+(key(dateOf(i))===key(now)&&i!==sel?" td":"")+'" data-d="'+i+'">'+SH[i-1]+"</button>"}
   var ch=document.getElementById("chips");ch.innerHTML=c;
   ch.onclick=function(e){var b=e.target.closest("[data-d]");if(b){sel=+b.dataset.d;render()}};
@@ -132,9 +138,12 @@ function render(){
   Object.keys(S[sel]).forEach(function(n){var a=S[sel][n].filter(function(x){return!x[3]||x[3]===w});if(a.length)day[n]=a});
   var rm=remote[k]||{};(rm.cancel||[]).forEach(function(n){if(day[n])ds[n]="Пары нет"});Object.keys(rm.pairs||{}).forEach(function(n){ds[n]=rm.pairs[n]});Object.assign(ds,subs[k]||{});
   var all=Object.keys(day).concat(Object.keys(ds)).map(Number),h=rm.only?'<div class="pair sub"><div class="body"><span class="tag">Замена на день</span><div class="s">Только: '+esc(rm.only)+"</div></div></div>":"";
-  if(!all.length){h+='<div class="free">Пар нет</div>'}
+  var sm=cfg.smg&&SMG[sel]?SMG[sel]:null,smShown=false;
+  function smg(){smShown=true;return '<div class="pair'+(isToday&&mins>=sm[0]&&mins<sm[1]?" now":"")+'"><div class="n">+</div><div class="body"><div class="tm">'+hm(sm[0])+"–"+hm(sm[1])+'</div><div class="row"><div><div class="s">Физкультура (СМГ)</div><div class="t">дополнительное занятие</div></div><div class="r">СМГ №3</div></div></div></div>'}
+  if(!all.length){h+=sm?"":'<div class="free">Пар нет</div>'}
   else{
     for(var n=Math.min.apply(null,all);n<=Math.max.apply(null,all);n++){
+      if(sm&&!smShown&&T[n]&&T[n][0]>sm[0])h+=smg();
       var it=day[n],sb=ds[n],tt=T[n]?'<div class="tm">'+hm(T[n][0])+"–"+hm(T[n][1])+"</div>":"";
       var cur=isToday&&T[n]&&mins>=T[n][0]&&mins<T[n][1]?" now":"";
       if(sb){
@@ -146,9 +155,21 @@ function render(){
       }else h+='<div class="pair gap"><div class="n">'+n+'</div><div class="body t">окно</div></div>';
     }
   }
+  if(sm&&!smShown)h+=smg();
   var L=document.getElementById("list");L.innerHTML=h;
   L.onclick=function(e){var p=e.target.closest("[data-n]");if(p)editSub(+p.dataset.n)};
   renderLunch();remind();
+}
+function applyTheme(){var r=document.documentElement;if(cfg.theme==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",cfg.theme)}
+function renderSet(){
+  var el=document.getElementById("set");
+  if(!setOpen){el.innerHTML="";return}
+  var h='<div class="box" style="margin:0 0 16px"><h2>Настройки</h2><div class="t" style="margin-bottom:6px">Тема</div><div class="seg">';
+  [["auto","Как в системе"],["light","Светлая"],["dark","Тёмная"]].forEach(function(x){h+='<button class="chip'+(cfg.theme===x[0]?" on":"")+'" data-th="'+x[0]+'">'+x[1]+"</button>"});
+  h+='</div><label class="opt"><input type="checkbox" id="smg"'+(cfg.smg?" checked":"")+'><span><b>Я в СМГ по физкультуре</b><br><small class="t">Добавит занятия СМГ №3: вт и чт 9:25–10:20, сб 13:45–14:30</small></span></label></div>';
+  el.innerHTML=h;
+  el.onclick=function(e){var b=e.target.closest("[data-th]");if(b){cfg.theme=b.dataset.th;sv("tk412_cfg",cfg);applyTheme();render()}};
+  el.querySelector("#smg").onchange=function(){cfg.smg=this.checked;sv("tk412_cfg",cfg);render()};
 }
 function noteHtml(k,n){var x=notes[k+"|"+n];return x?'<div class="note">📝 '+esc(x.t||"Напоминание")+(x.at?" · ⏰ "+esc(x.at.replace("T"," ")):"")+"</div>":""}
 function pad(x){return("0"+x).slice(-2)}
