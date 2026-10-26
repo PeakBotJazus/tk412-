@@ -66,6 +66,7 @@ span.wkb{cursor:default}
 .link b{display:block;font-weight:600}
 .link small{color:var(--mut);font-size:12px}
 .link .go{margin-left:auto;color:var(--mut);font-size:18px}
+.link+.link{margin-top:8px}
 .hint{font-size:12px;color:var(--mut);margin-top:16px;text-align:center}
 </style>
 </head>
@@ -77,7 +78,8 @@ span.wkb{cursor:default}
 <div class="chips" id="chips"></div>
 <div id="list"></div>
 <div id="lunch"></div>
-<a class="link" href="https://sdo.bsac.by/login/index.php" target="_blank" rel="noopener"><div class="ic">🎓</div><div><b>Платформа удалённого обучения</b><small>СДО Академии связи · sdo.bsac.by</small></div><div class="go">↗</div></a>
+<a class="link" href="http://sdo.bsac.by" target="_blank" rel="noopener"><div class="ic">🎓</div><div><b>Платформа удалённого обучения</b><small>СДО Академии связи · sdo.bsac.by</small></div><div class="go">↗</div></a>
+<a class="link" href="http://86.57.181.226/login/index.php" target="_blank" rel="noopener"><div class="ic">📚</div><div><b>Система Moodle</b><small>Витебский филиал · запасной вход</small></div><div class="go">↗</div></a>
 <div class="hint">Нажмите на пару: замена, заметка, напоминание</div>
 </main>
 <script>
@@ -94,12 +96,14 @@ var S={
 var TW={1:[510,610],2:[620,720],3:[765,865],4:[875,975],5:[985,1085],6:[1095,1195]};
 var TS={1:[510,600],2:[615,710],3:[720,815],4:[825,920]};
 // снимок меню с clever.by от 22.10.2026: [раздел, [[блюдо, выход, цена]]]
-var LUNCH=[
+var LUNCH0=[
 ["Салаты",[["Салат «Сытный»","100 г","3,50"],["Винегрет с фасолью","110 г","2,50"],["Салат «Коул слоу»","100/30","3,00"]]],
 ["Супы",[["Борщ «Украинский» со сметаной, хлебом и салом","250/30/30/60","4,50"],["Бульон из птицы с гренками","250/30/10","2,50"]]],
 ["Горячие блюда",[["Шницель «По-венски» из свинины с соусом «BBQ»","100/30","5,30"],["Котлета «Папараць-кветка» с чесночным соусом","105/30","4,80"],["Рыба, запечённая с помидором и горчичным соусом","125/30","5,00"]]],
 ["Гарниры",[["Картофель отварной с зеленью","150 г","2,00"],["Каша овсяная","150 г","2,00"],["Каша перловая с грибами и луком","250 г","2,50"]]]
 ];
+var LUNCH=LUNCH0,LUPD="22.10.2026",cm=ld("tk412_menu",null);
+if(cm&&cm.s){LUNCH=cm.s;LUPD=cm.u||LUPD}
 var DN=["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
 var SH=["Пн","Вт","Ср","Чт","Пт","Сб"];
 var MO=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
@@ -176,12 +180,15 @@ function remind(){
 function sync(){
   if(!API)return;
   fetch(API+"/subs?g="+encodeURIComponent(GROUP)).then(function(r){return r.json()}).then(function(j){remote=j;sv("tk412_remote",j);render()}).catch(function(){});
+  fetch(API+"/menu").then(function(r){return r.json()}).then(function(j){
+    if(j&&j.sections&&j.sections.length){LUNCH=j.sections.map(function(q){return[q.t,q.items.map(function(x){return[x.n,x.w,x.p,x.d]})]});LUPD=j.updated||LUPD;sv("tk412_menu",{s:LUNCH,u:LUPD});renderLunch()}
+  }).catch(function(){});
 }
 function renderLunch(){
   var el=document.getElementById("lunch");
   if(sel>5){el.innerHTML="";return}
-  var h='<details class="lunch"><summary>Бизнес-ланч · Губернский трактир<span>12:00–15:00 · меню с clever.by от 22.10.2026</span></summary>';
-  LUNCH.forEach(function(s){h+='<div class="sec">'+s[0]+"</div>";s[1].forEach(function(x){h+='<div class="it"><div>'+esc(x[0])+"<small>"+esc(x[1])+'</small></div><div class="pr">'+x[2]+" р.</div></div>"})});
+  var h='<details class="lunch"><summary>Бизнес-ланч · Губернский трактир<span>12:00–15:00 · меню с clever.by от '+LUPD+'</span></summary>';
+  LUNCH.forEach(function(s){h+='<div class="sec">'+s[0]+"</div>";s[1].forEach(function(x){h+='<div class="it"><div>'+esc(x[0])+"<small>"+esc(x[1]+(x[3]?" · "+x[3]:""))+'</small></div><div class="pr">'+x[2]+" р.</div></div>"})});
   el.innerHTML=h+"</details>";
 }
 render();sync();
