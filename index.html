@@ -20,7 +20,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:480px;margin:0 auto;padding:20px 16px 40px}
+main{max-width:480px;margin:0 auto;padding:20px 16px 100px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 h1{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:0}
 .wkb{border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:99px;padding:4px 12px;font:inherit;font-size:12px;cursor:pointer}
@@ -71,21 +71,55 @@ span.wkb{cursor:default}
 .seg{display:flex;gap:6px}
 .opt{display:flex;gap:12px;align-items:flex-start;margin-top:16px;cursor:pointer}
 input[type=checkbox]{width:22px;height:22px;padding:0;margin:0;flex:none;accent-color:var(--ac)}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;gap:2px;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+.tabs button{flex:1;max-width:96px;border:0;background:none;color:var(--mut);font:inherit;font-size:11px;padding:4px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tabs button i{font-style:normal;font-size:20px;line-height:1}
+.tabs button.on{color:var(--ac);font-weight:600}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:0 0 16px}
+.bar i{display:block;height:100%;background:var(--ac);border-radius:99px}
+.subj{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 14px;margin-bottom:8px}
+.subj summary{display:grid;grid-template-columns:1fr auto;gap:0 10px;align-items:center}
+.subj summary span{grid-column:1;font-size:12px;font-weight:400;color:var(--mut)}
+.subj summary em{grid-column:2;grid-row:1/3;font-style:normal;font-weight:650;color:var(--ac)}
+.lab{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);cursor:pointer;font-size:15px}
+.lab b{color:var(--mut);font-weight:600}
+.hero{text-align:center;padding:28px 0 20px}
+.hero .num{font-size:84px;font-weight:700;line-height:1;color:var(--ac)}
+.hero .lbl{font-size:18px;font-weight:600;margin-top:6px}
+.ex{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.ex input{width:150px;margin:0}
+.cd{text-align:right}.cd b{font-size:28px;color:var(--ac);line-height:1}.cd small{display:block;color:var(--mut);font-size:12px}
+.pay{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
 .hint{font-size:12px;color:var(--mut);margin-top:16px;text-align:center}
 </style>
 </head>
 <body>
 <main>
 <div id="rem"></div>
-<div class="top"><h1 id="wk"></h1><div class="tr"><span class="wkb" id="wb"></span><button class="wkb" id="gear" aria-label="Настройки">⚙</button></div></div>
+<section id="v-sched">
+<div class="top"><h1 id="wk"></h1><div class="tr"><span class="wkb" id="wb"></span></div></div>
 <div class="date" id="dt"></div>
-<div id="set"></div>
 <div class="chips" id="chips"></div>
 <div id="list"></div>
 <div id="lunch"></div>
-<a class="link" href="http://sdo.bsac.by" target="_blank" rel="noopener"><div class="ic">🎓</div><div><b>Платформа удалённого обучения</b><small>СДО Академии связи · sdo.bsac.by</small></div><div class="go">↗</div></a>
 <div class="hint">Нажмите на пару: замена, заметка, напоминание</div>
+</section>
+<section id="v-labs" hidden></section>
+<section id="v-stip" hidden></section>
+<section id="v-exam" hidden></section>
+<section id="v-more" hidden>
+<h1>Ещё</h1><div class="date">Настройки</div>
+<div id="set"></div>
+<a class="link" href="http://sdo.bsac.by" target="_blank" rel="noopener"><div class="ic">🎓</div><div><b>Платформа удалённого обучения</b><small>СДО Академии связи · sdo.bsac.by</small></div><div class="go">↗</div></a>
+</section>
 </main>
+<nav class="tabs" id="tabs">
+<button data-t="sched" id="t-sched" class="on"><i>📅</i>Расписание</button>
+<button data-t="labs" id="t-labs"><i>🧪</i>Лабы</button>
+<button data-t="stip" id="t-stip"><i>💰</i>Стипендия</button>
+<button data-t="exam" id="t-exam"><i>📝</i>Сессия</button>
+<button data-t="more" id="t-more"><i>⚙️</i>Ещё</button>
+</nav>
 <script>
 // [предмет, преподаватель, кабинет, неделя: "в" верхняя / "н" нижняя / пусто — каждую]
 var S={
@@ -121,7 +155,7 @@ var now=new Date(),base=new Date(now.getFullYear(),now.getMonth(),now.getDate())
 if(base.getDay()===0)base.setDate(base.getDate()+1);
 var mon=new Date(base);mon.setDate(base.getDate()-(base.getDay()-1));
 var ANCHOR=new Date(2026,9,19); // неделя меняется со вторника: 20–26.10.2026 — нижняя, 27.10–02.11 — верхняя
-var sel=base.getDay(),subs=ld("tk412_subs",{}),flip=0,cfg=ld("tk412_cfg",{theme:"auto",smg:false}),setOpen=false;
+var sel=base.getDay(),subs=ld("tk412_subs",{}),flip=0,cfg=ld("tk412_cfg",{theme:"auto",smg:false}),setOpen=true;
 applyTheme();
 var API="https://tk412.amogusovick.workers.dev",GROUP="ТК412",remote=ld("tk412_remote",{}),notes=ld("tk412_notes",{}),seen=ld("tk412_seen",{});
 function dateOf(w){var d=new Date(mon);d.setDate(mon.getDate()+w-1);return d}
@@ -130,7 +164,7 @@ function render(){
   var d=dateOf(sel),k=key(d),isToday=k===key(now),up=upper(d),w=up?"в":"н";
   document.getElementById("wk").textContent=isToday?"Сегодня":(k===key(base)&&base.getDay()!==now.getDay()?"Завтра":DN[sel]);
   document.getElementById("dt").textContent=DN[sel]+", "+d.getDate()+" "+MO[d.getMonth()];
-  var wb=document.getElementById("wb");wb.textContent=up?"Верхняя неделя":"Нижняя неделя";renderSet();document.getElementById("gear").onclick=function(){setOpen=!setOpen;render()};
+  var wb=document.getElementById("wb");wb.textContent=up?"Верхняя неделя":"Нижняя неделя";renderSet();
   var c="";for(var i=1;i<=6;i++){c+='<button class="chip'+(i===sel?" on":"")+(key(dateOf(i))===key(now)&&i!==sel?" td":"")+'" data-d="'+i+'">'+SH[i-1]+"</button>"}
   var ch=document.getElementById("chips");ch.innerHTML=c;
   ch.onclick=function(e){var b=e.target.closest("[data-d]");if(b){sel=+b.dataset.d;render()}};
@@ -212,7 +246,70 @@ function renderLunch(){
   LUNCH.forEach(function(s){h+='<div class="sec">'+s[0]+"</div>";s[1].forEach(function(x){h+='<div class="it"><div>'+esc(x[0])+"<small>"+esc(x[1]+(x[3]?" · "+x[3]:""))+'</small></div><div class="pr">'+x[2]+" р.</div></div>"})});
   el.innerHTML=h+"</details>";
 }
-render();sync();
+// ---------- Лабораторные ----------
+var LABS=[
+{id:"te",t:"Техническая электроника",s:"Рабочая тетрадь 2026 · ЛР 1–9",n0:1,l:["Назначение и возможности Electronic Workbench. Правила ТБ при работе на ПК","Исследование выпрямительного диода","Исследование стабилитрона","Исследование БТ, включённого по схеме с ОБ в статическом режиме","Исследование БТ, включённого по схеме с ОЭ в статическом режиме","Исследование ПТ в статическом режиме","Исследование фотодиода","Исследование оптрона","Исследование БТ, включённого по схеме с ОЭ в нагрузочном режиме"]},
+{id:"met",t:"Метрология и специальные измерения",s:"Тетрадь 1 семестра · ЛР 2–14",n0:2,l:["Изучение работы мер и вспомогательных устройств","Изучение работы вольтметров","Изучение работы НЧ измерительного генератора типа «RC»","Изучение работы электронного осциллографа","Измерение сопротивлений заземлений","Измерение параметров сигналов электронным осциллографом","Измерение сопротивлений омметром и мостом постоянного тока","Изучение работы измерительного генератора широкого диапазона частот","Измерение частоты с помощью осциллографа","Изучение работы цифрового частотомера","Измерение амплитудной характеристики четырёхполюсника","Измерение нелинейных искажений методом подавления основной гармоники","Измерение реактивных сопротивлений мостом переменного тока"]},
+{id:"tes",t:"Теория электрической связи",s:"Тетрадь 2 семестра · ЛР 7–12",n0:7,l:["Исследование моделей помехоустойчивых блочных кодеров","Исследование умножителя частоты","Исследование LC-автогенератора","Исследование RC-автогенератора","Исследование модели DPSK относительно-фазового модулятора (ОФМ)","Исследование детектора АМ сигналов"]}
+];
+var labs=ld("tk412_labs",{}),openL={},ex=ld("tk412_ex",{});
+function renderLabs(){
+  var el=document.getElementById("v-labs"),tot=0,dn=0,h="";
+  LABS.forEach(function(q){var d=0;q.l.forEach(function(_,i){if(labs[q.id+":"+(q.n0+i)])d++});q.d=d;tot+=q.l.length;dn+=d});
+  h='<h1>Лабораторные работы</h1><div class="date">Сделано '+dn+' из '+tot+'</div><div class="bar"><i style="width:'+(tot?Math.round(dn/tot*100):0)+'%"></i></div>';
+  LABS.forEach(function(q){
+    h+='<details class="subj"'+(openL[q.id]?" open":"")+' data-s="'+q.id+'"><summary><b>'+esc(q.t)+"</b><span>"+esc(q.s)+"</span><em>"+q.d+"/"+q.l.length+"</em></summary>";
+    q.l.forEach(function(t,i){var n=q.n0+i,k=q.id+":"+n;h+='<label class="lab"><input type="checkbox" data-k="'+k+'"'+(labs[k]?" checked":"")+"><span><b>№"+n+"</b> "+esc(t)+"</span></label>"});
+    h+="</details>"});
+  el.innerHTML=h+'<div class="hint">Отметки хранятся на этом устройстве</div>';
+}
+// ---------- Стипендия ----------
+var HOL=["01-01","01-07","03-08","05-01","05-09","07-03","11-07","12-25"],HOLX=["2026-04-21","2027-05-11","2028-04-25"]; // фикс. праздники РБ и Радуница
+function isOff(d){var w=d.getDay(),m=pad(d.getMonth()+1)+"-"+pad(d.getDate());return w===0||w===6||HOL.indexOf(m)>=0||HOLX.indexOf(d.getFullYear()+"-"+m)>=0}
+function payDay(y,m){var d=new Date(y,m,21);while(isOff(d))d.setDate(d.getDate()-1);return d}
+function pl(n,a,b,c){var m=n%10,h=n%100;return m===1&&h!==11?a:(m>=2&&m<=4&&(h<10||h>=20)?b:c)}
+function dm(d){return d.getDate()+" "+MO[d.getMonth()]}
+function renderStip(){
+  var t=new Date(now.getFullYear(),now.getMonth(),now.getDate()),list=[];
+  for(var k=0;list.length<4&&k<16;k++){var d=payDay(t.getFullYear(),t.getMonth()+k);if(d>=t)list.push(d)}
+  var nx=list[0],pv=payDay(nx.getFullYear(),nx.getMonth()-1),n=Math.round((nx-t)/864e5),pr=Math.round((t-pv)/(nx-pv)*100);
+  var orig=new Date(nx.getFullYear(),nx.getMonth(),21);
+  var h='<h1>Стипендия</h1><div class="hero"><div class="num">'+(n===0?"🎉":n)+'</div><div class="lbl">'+(n===0?"Стипендия сегодня":pl(n,"день","дня","дней")+" до стипендии")+'</div><div class="t" style="margin-top:6px">'+DN[nx.getDay()].toLowerCase()+", "+dm(nx)+"</div></div>";
+  h+='<div class="bar"><i style="width:'+Math.max(0,Math.min(100,pr))+'%"></i></div>';
+  if(nx.getDate()!==21)h+='<div class="pair sub" style="cursor:default"><div class="body"><span class="tag">Выплата раньше</span><div class="s">21 '+MO[orig.getMonth()]+" — "+DN[orig.getDay()].toLowerCase()+(isOff(orig)&&orig.getDay()%6!==0?" (праздник)":"")+", поэтому деньги придут "+dm(nx)+"</div></div></div>";
+  h+='<div class="box"><h2>Ближайшие выплаты</h2>';
+  list.forEach(function(d){var c=Math.round((d-t)/864e5);h+='<div class="pay"><span>'+dm(d)+' <span class="t">· '+DN[d.getDay()].toLowerCase()+'</span></span><b>'+(c===0?"сегодня":c+" дн.")+"</b></div>"});
+  document.getElementById("v-stip").innerHTML=h+'</div><div class="hint">Выплата 21-го числа. Если оно выходной или праздник, считается предыдущий рабочий день. Переносы рабочих дней не учитываются.</div>';
+}
+// ---------- Сессия ----------
+var SESS=[
+{id:"w",t:"Зимняя сессия",def:"2027-01-05",sub:"начало по графику образовательного процесса",ex:[["tes","ТЭС"],["cimpu","ЦиМПУ"]]},
+{id:"s",t:"Летняя сессия",def:"2027-06-29",sub:"начало по графику, предметы пока неизвестны",ex:[]}
+];
+function daysTo(v){var t=new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.round((new Date(v+"T00:00:00")-t)/864e5)}
+function cdText(n){return n>0?"через "+n+" "+pl(n,"день","дня","дней"):n===0?"сегодня":Math.abs(n)+" "+pl(Math.abs(n),"день","дня","дней")+" назад"}
+function renderExam(){
+  var h='<h1>Сессия</h1><div class="date">Экзамены</div>';
+  SESS.forEach(function(q){
+    var v=ex[q.id]||q.def,n=daysTo(v);
+    h+='<div class="box" style="margin-top:0;margin-bottom:12px"><div class="row"><div><div class="s">'+q.t+'</div><div class="t">'+q.sub+'</div></div><div class="cd"><b>'+(n>0?n:n===0?"0":"–")+"</b><small>"+(n>0?pl(n,"день","дня","дней"):n===0?"сегодня":"идёт или прошла")+'</small></div></div><div class="t" style="margin:12px 0 4px">Дата начала</div><input type="date" data-e="'+q.id+'" value="'+v+'">';
+    q.ex.forEach(function(e){var k=q.id+":"+e[0],d=ex[k];h+='<div class="ex"><div><b>'+e[1]+'</b><div class="t">'+(d?cdText(daysTo(d)):"дата пока неизвестна")+'</div></div><input type="date" data-e="'+k+'" value="'+(d||"")+'"></div>'});
+    h+="</div>"});
+  document.getElementById("v-exam").innerHTML=h+'<div class="hint">Даты экзаменов введите, когда появится расписание сессии</div>';
+}
+// ---------- Вкладки ----------
+var TABS=["sched","labs","stip","exam","more"];
+function go(t){
+  TABS.forEach(function(x){document.getElementById("v-"+x).hidden=x!==t;document.getElementById("t-"+x).className=x===t?"on":""});
+  if(t==="labs")renderLabs();if(t==="stip")renderStip();if(t==="exam")renderExam();
+  try{window.scrollTo(0,0)}catch(e){}
+}
+document.getElementById("tabs").onclick=function(e){var b=e.target.closest("[data-t]");if(b)go(b.dataset.t)};
+document.getElementById("v-labs").onchange=function(e){var c=e.target;if(c.dataset&&c.dataset.k){if(c.checked)labs[c.dataset.k]=1;else delete labs[c.dataset.k];sv("tk412_labs",labs);renderLabs()}};
+document.getElementById("v-labs").addEventListener("toggle",function(e){var d=e.target;if(d.dataset&&d.dataset.s)openL[d.dataset.s]=d.open},true);
+document.getElementById("v-exam").onchange=function(e){var c=e.target;if(c.dataset&&c.dataset.e){if(c.value)ex[c.dataset.e]=c.value;else delete ex[c.dataset.e];sv("tk412_ex",ex);renderExam()}};
+
+go('sched');render();sync();
 document.addEventListener("visibilitychange",function(){if(!document.hidden){sync();remind()}});
 setInterval(remind,60000);
 </script>
