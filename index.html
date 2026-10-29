@@ -98,7 +98,7 @@ input[type=checkbox]{width:22px;height:22px;padding:0;margin:0;flex:none;accent-
 @keyframes pulse{50%{text-shadow:0 0 36px var(--ac)}}
 @keyframes glow{50%{box-shadow:0 0 18px var(--ac)}}
 :root[data-hw="1"]{color-scheme:dark;--bg:#140a1f;--card:#1f1230;--tx:#f3e9ff;--mut:#a995c2;--line:#33204a;--ac:#ff8a1f;--acbg:#2e1a0f;--warn:#b57cff;--warnbg:#241238}
-:root[data-hw="1"] body{background:radial-gradient(circle at 85% 0,#3a1b52 0,transparent 45%),var(--bg) fixed}
+:root[data-hw="1"] #fx{background:radial-gradient(circle at 85% 0,#3a1b52 0,transparent 55%)}
 :root[data-hw="1"] .tabs .a{display:none}
 :root[data-hw="1"] .tabs .b{display:block}
 :root[data-hw="1"] #dt::before{content:"🎃 "}
@@ -211,7 +211,15 @@ function render(){
   L.onclick=function(e){var p=e.target.closest("[data-n]");if(p)editSub(+p.dataset.n)};
   renderLunch();remind();
 }
-function applyTheme(){var r=document.documentElement;if(cfg.theme==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",cfg.theme);if(cfg.hw)r.setAttribute("data-hw","1");else r.removeAttribute("data-hw");fx()}
+function applyTheme(){var r=document.documentElement;if(cfg.theme==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",cfg.theme);if(cfg.hw)r.setAttribute("data-hw","1");else r.removeAttribute("data-hw");fx();icons()}
+function icons(){
+  if(!document.querySelector)return;var hw=!!cfg.hw;
+  function at(q,a,v){var e=document.querySelector(q);if(e)e.setAttribute(a,v)}
+  at('link[rel="manifest"]',"href",hw?"manifest-hw.webmanifest":"manifest.webmanifest");
+  at('link[rel="icon"]',"href",hw?"icon-hw-192.png":"icon-192.png");
+  at('link[rel="apple-touch-icon"]',"href",hw?"icon-hw-180.png":"icon-180.png");
+  at('meta[name="theme-color"]',"content",hw?"#140a1f":"#2f6fed");
+}
 function fx(){
   var e=document.getElementById("fx");if(!e)return;e.innerHTML="";
   if(!cfg.hw||cfg.fx===false)return;
@@ -224,7 +232,7 @@ function renderSet(){
   if(!setOpen){el.innerHTML="";return}
   var h='<div class="box" style="margin:0 0 16px"><h2>Настройки</h2><div class="t" style="margin-bottom:6px">Тема</div><div class="seg">';
   [["auto","Как в системе"],["light","Светлая"],["dark","Тёмная"]].forEach(function(x){h+='<button class="chip'+(cfg.theme===x[0]?" on":"")+'" data-th="'+x[0]+'">'+x[1]+"</button>"});
-  h+='</div><label class="opt"><input type="checkbox" id="smg"'+(cfg.smg?" checked":"")+'><span><b>Я в СМГ по физкультуре</b><br><small class="t">Добавит занятия СМГ №3: вт и чт 9:25–10:20, сб 13:45–14:30</small></span></label><label class="opt"><input type="checkbox" id="hw"'+(cfg.hw?" checked":"")+'><span><b>Тема Хэллоуина 🎃</b><br><small class="t">Тёмные тематические цвета, летучие мыши, привидения и тыквы. Выключается здесь же</small></span></label>'+(cfg.hw?'<label class="opt"><input type="checkbox" id="fxc"'+(cfg.fx!==false?" checked":"")+'><span><b>Летающие смайлики</b><br><small class="t">Анимация на фоне</small></span></label>':"")+'</div>';
+  h+='</div><label class="opt"><input type="checkbox" id="smg"'+(cfg.smg?" checked":"")+'><span><b>Я в СМГ по физкультуре</b><br><small class="t">Добавит занятия СМГ №3: вт и чт 9:25–10:20, сб 13:45–14:30</small></span></label><label class="opt"><input type="checkbox" id="hw"'+(cfg.hw?" checked":"")+'><span><b>Тема Хэллоуина 🎃</b><br><small class="t">Тёмные тематические цвета, летучие мыши, привидения и тыквы. Выключается здесь же</small>'+(cfg.hw?'<small class="t" style="display:block;margin-top:6px">Иконка 🎃 применится к новым установкам. Чтобы сменить значок на главном экране, удалите ярлык и установите приложение заново</small>':'')+'<small></span></label>'+(cfg.hw?'<label class="opt"><input type="checkbox" id="fxc"'+(cfg.fx!==false?" checked":"")+'><span><b>Летающие смайлики</b><br><small class="t">Анимация на фоне</small></span></label>':"")+'</div>';
   el.innerHTML=h;
   el.onclick=function(e){var b=e.target.closest("[data-th]");if(b){cfg.theme=b.dataset.th;sv("tk412_cfg",cfg);applyTheme();render()}};
   el.querySelector("#smg").onchange=function(){cfg.smg=this.checked;sv("tk412_cfg",cfg);render()};
