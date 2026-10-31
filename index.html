@@ -126,6 +126,12 @@ input[type=checkbox]{width:22px;height:22px;padding:0;margin:0;flex:none;accent-
 .thm i{font-style:normal;font-size:26px}
 .thm span{flex:1}
 .thm em{font-style:normal;color:var(--ac);font-weight:700}
+body{overflow-x:hidden}
+@keyframes inl{from{transform:translateX(36px);opacity:0}to{transform:none;opacity:1}}
+@keyframes inr{from{transform:translateX(-36px);opacity:0}to{transform:none;opacity:1}}
+.in-l{animation:inl .22s ease-out}
+.in-r{animation:inr .22s ease-out}
+@media (prefers-reduced-motion:reduce){.in-l,.in-r{animation:none}}
 .hint{font-size:12px;color:var(--mut);margin-top:16px;text-align:center}
 </style>
 </head>
@@ -427,14 +433,33 @@ function renderExam(){
   document.getElementById("v-exam").innerHTML=h+'<div class="hint">Даты экзаменов введите, когда появится расписание сессии</div>';
 }
 // ---------- Вкладки ----------
-var TABS=["sched","labs","stip","exam","more","themes"];
+var TABS=["sched","labs","stip","exam","more","themes"],ORDER=["sched","labs","stip","exam","more"],curTab="sched";
 function go(t){
-  var tab=t==="themes"?"more":t;
+  var tab=t==="themes"?"more":t,pi=ORDER.indexOf(curTab==="themes"?"more":curTab),ni=ORDER.indexOf(tab);
+  var dir=t===curTab?"":t==="themes"?"l":(curTab==="themes"&&t==="more")?"r":ni>pi?"l":"r";
+  curTab=t;
   TABS.forEach(function(x){document.getElementById("v-"+x).hidden=x!==t});
-  ["sched","labs","stip","exam","more"].forEach(function(x){document.getElementById("t-"+x).className=x===tab?"on":""});
+  ORDER.forEach(function(x){document.getElementById("t-"+x).className=x===tab?"on":""});
   if(t==="labs")renderLabs();if(t==="stip")renderStip();if(t==="exam")renderExam();if(t==="themes")renderThemes();if(t==="more")renderSet();
+  var v=document.getElementById("v-"+t);v.className=dir?"in-"+dir:"";
+  if(dir)v.onanimationend=function(){this.className=""};
   try{window.scrollTo(0,0)}catch(e){}
 }
+// свайпы влево/вправо между страницами
+var sx=0,sy=0,stm=0,sOk=false;
+function swStart(e){var t=e.touches&&e.touches[0];if(!t)return;sx=t.clientX;sy=t.clientY;stm=Date.now();var el=e.target;sOk=!(el&&el.closest&&el.closest("input,textarea,select"))}
+function swEnd(e){
+  if(!sOk)return;sOk=false;
+  var t=e.changedTouches&&e.changedTouches[0];if(!t)return;
+  var dx=t.clientX-sx,dy=t.clientY-sy;
+  if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.6||Date.now()-stm>700)return;
+  try{if(window.getSelection&&String(window.getSelection()))return}catch(x){}
+  var d=dx<0?1:-1;
+  if(curTab==="themes"){if(d<0)go("more");return}
+  var j=ORDER.indexOf(curTab)+d;if(j>=0&&j<ORDER.length)go(ORDER[j]);
+}
+document.addEventListener("touchstart",swStart,{passive:true});
+document.addEventListener("touchend",swEnd,{passive:true});
 document.getElementById("tabs").onclick=function(e){var b=e.target.closest("[data-t]");if(b)go(b.dataset.t)};
 document.getElementById("v-labs").onchange=function(e){var c=e.target;if(c.dataset&&c.dataset.k){if(c.checked)labs[c.dataset.k]=1;else delete labs[c.dataset.k];sv("tk412_labs",labs);renderLabs()}};
 document.getElementById("v-labs").addEventListener("toggle",function(e){var d=e.target;if(d.dataset&&d.dataset.s)openL[d.dataset.s]=d.open},true);
