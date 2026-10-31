@@ -132,10 +132,12 @@ input[type=checkbox]{width:22px;height:22px;padding:0;margin:0;flex:none;accent-
 .in-r{animation:inr .22s ease-out}
 @media (prefers-reduced-motion:reduce){.in-l,.in-r{animation:none}}
 /* каркас: страница не прокручивается, прокручивается только main; панель и фон закреплены внутри body */
-body{position:relative;height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:hidden;touch-action:pan-y pinch-zoom}
+body{position:fixed;top:0;left:0;right:0;height:100%;height:var(--ah,100%);margin:0;overflow:hidden;touch-action:pan-y pinch-zoom}
+:root{padding-top:0;padding-bottom:0}
+main{padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
 main{position:absolute;inset:0;max-width:none;margin:0;overflow-y:auto;overflow-x:clip;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 main>*{max-width:480px;margin-left:auto;margin-right:auto}
-.tabs{position:absolute;left:0;right:0;bottom:0;padding:6px}
+.tabs{position:absolute;left:0;right:0;bottom:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
 #fx{position:absolute}
 /* ---- Liquid Glass ---- */
 @keyframes orb{from{transform:translate(0,0) scale(1)}to{transform:translate(46px,-64px) scale(1.18)}}
@@ -148,7 +150,7 @@ main>*{max-width:480px;margin-left:auto;margin-right:auto}
 :root[data-lg="1"] :is(.pair,.box,.subj,.lunch,.link,.menu,.thm){border-radius:22px}
 :root[data-lg="1"] .chip.on{background-image:none}
 :root[data-lg="1"] :is(input,textarea){background:rgba(255,255,255,.2);border-color:var(--line)}
-:root[data-lg="1"] .tabs{left:12px;right:12px;bottom:10px;max-width:456px;margin:0 auto;padding:6px;border:1px solid var(--line);border-radius:30px;background-color:var(--card);background-image:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.05) 50%,rgba(255,255,255,0) 75%);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 14px 36px rgba(0,0,0,.22)}
+:root[data-lg="1"] .tabs{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:456px;margin:0 auto;padding:6px;border:1px solid var(--line);border-radius:30px;background-color:var(--card);background-image:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.05) 50%,rgba(255,255,255,0) 75%);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 14px 36px rgba(0,0,0,.22)}
 :root[data-lg="1"] .tabs button.on{background:var(--acbg);border-radius:22px}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root[data-lg="1"]{--card:rgba(255,255,255,.78)}}
 .hint{font-size:12px;color:var(--mut);margin-top:16px;text-align:center}
@@ -532,8 +534,12 @@ document.getElementById("lunch").addEventListener("toggle",function(e){lopen=e.t
 document.getElementById("lunch").onclick=function(e){if(e.target.id==="mr")syncMenu(true)};
 document.getElementById("v-exam").onchange=function(e){var c=e.target;if(c.dataset&&c.dataset.e){if(c.value)ex[c.dataset.e]=c.value;else delete ex[c.dataset.e];sv("tk412_ex",ex);renderExam()}};
 
+function fit(){try{var h=window.innerHeight;if(h>200)document.documentElement.style.setProperty("--ah",h+"px")}catch(e){}}
+fit();
+["resize","orientationchange","pageshow","focus"].forEach(function(ev){try{window.addEventListener(ev,fit)}catch(e){}});
+setTimeout(fit,300);setTimeout(fit,1200);
 autoDay();go('sched');render();sync();
-document.addEventListener("visibilitychange",function(){if(!document.hidden){autoDay();sync();remind()}});
+document.addEventListener("visibilitychange",function(){if(!document.hidden){fit();autoDay();sync();remind()}});
 setInterval(function(){autoDay();remind()},60000);
 </script>
 <script>
