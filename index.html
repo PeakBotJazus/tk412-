@@ -187,4 +187,268 @@ var CAN="data:image/webp;base64,UklGRtYOAABXRUJQVlA4WAoAAAAQAAAALgAAdwAAQUxQSNgC
 YMgw93rAX+LW8fxfSgqoAPVw0D2LJgvGtg7Zmz1LGJ1Pjix2l4kBDheP6ioVlWF5F0mSiXH0R80xPr7nYETOBlZH2eJmgVZsHd5i7JHl7X3XRSMmWXLx1udNsF42c9neTo25+Mb6Ywtxhh519vfQH34tKA9GZHf/+khDMVLSOIS1iwtUMy95q3SXiw/zWF7pBA8MULX+6aRQNWtPo/HwaFOs8vxPyHwm+vBn+xXm0kNFUNiFEOPtHf963gGhWF4CUGsYgKhqpNQe7mAMGAwzxHiG3YspU69uiDeVtpaQc4Yk1NJ/xyjnP63CSS74VbnnTc0v4hC5neaGbDFEUu30ZMGwea47KxBX0ZhcOhqIoLZW9eEqd9svJ97T4rrb2Xz9L95iN148sPdbPb8IeKBEBFWLYEFnz9vByWS8Agdbg1IIaUoawCrjGMyb7vxvQ64JaQKnjpNzQvuANH3d5HLEGcISgyxl+emfBdJdhROD4qh89F3TxM4mdX5Zbm0CGHsLbC6RJ2YVLdTW6kubUbTeeGtk8wvrvTQwX71OlgRapDD7Y12ABOcDXRsV/5HAPHt3G2DZWMcXPhhkKjm2rrJa1s6QWZ0Yd6PxcalQZFNNDleI3Nn+uOdRzyyx1AJ5HHZQS+SRuBBVaLxaVZ1jzWL+j6zwqwpxaF1rPtAJrSMEfMdA4Pau+Cwp7D6nd1vXNfM9qHOwJqJVODqZ3nGTdvA4u6OlPs28fMkS5Bh+9OJxwxILSAD6hxWhaiJ9aLVvnv/7JRKWXKLxExVZFfHnqFlNPrpIDvVFZ1qF9poj5kb1ijLvhrhvZJdaA6OBsGGC2p8Xk0dzkNYtsjxh/9Mb2XuHoAkf3PYJ92OfvtUL02IT+SY86DpCOgHg1+BZ893lcmP+Ka2RzFR89txsOzKEMbDxG1sajCdE3zflwGGDlk5d3pql75+kCh6go8a8eBMsXKIQst26/F6uVMBV8QPQ0oqStkvbd5PkWg5h1ow0vGHHn6/7kfEfJSEMAT+O3D/QIZEIJF6M74pPWSUmdDRyzUY97S1oXTDBfwWvD37xaLbW3IolzzELCXV/yBBh4f6ixFxW0aG902dhvxpm8Wal6JFtv7Shn6NCZumeKqmPSUhLhjD4hZfREeD4cBZddCiZec9Awj1T0n5A5R5ITeNXqAJQAGAH/ABWRgTFQ8OjtNQtKtRS1HM83RbK8msGty3JZF2v/QX+lZ3MlwHuv8q+26msc823iGvHRN7K26/1KDPaKs4pm/8ugFLJlkOl6ekj1G/7PZdX5e3zBYOx4vwaPz1thaAAAAA=";
 var SH=["Пн","Вт","Ср","Чт","Пт","Сб"];
 var MO=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
-f
+function ld(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c]})}
+function key(d){return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+function hm(m){return Math.floor(m/60)+":"+("0"+m%60).slice(-2)}
+var now=new Date(),base=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+if(base.getDay()===0)base.setDate(base.getDate()+1);
+var mon=new Date(base);mon.setDate(base.getDate()-(base.getDay()-1));
+var ANCHOR=new Date(2026,9,19); // неделя меняется со вторника: 20–26.10.2026 — нижняя, 27.10–02.11 — верхняя
+var sel=base.getDay(),subs=ld("tk412_subs",{}),flip=0,cfg=ld("tk412_cfg",{theme:"auto",smg:false}),setOpen=true;
+applyTheme();
+var API="https://tk412.amogusovick.workers.dev",GROUP="ТК412",remote=ld("tk412_remote",{}),notes=ld("tk412_notes",{}),seen=ld("tk412_seen",{});
+function dateOf(w){var d=new Date(mon);d.setDate(mon.getDate()+w-1);return d}
+function upper(d){var s=new Date(d);s.setDate(s.getDate()-1);s.setDate(s.getDate()-(s.getDay()+6)%7);return(((Math.round((s-ANCHOR)/6048e5)+flip)%2)+2)%2===1}
+function render(){
+  var d=dateOf(sel),k=key(d),isToday=k===key(now),up=upper(d),w=up?"в":"н";
+  var tmr=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
+  document.getElementById("wk").textContent=isToday?"Сегодня":(k===key(tmr)?"Завтра":DN[sel]);
+  document.getElementById("dt").textContent=DN[sel]+", "+d.getDate()+" "+MO[d.getMonth()];
+  var wb=document.getElementById("wb");wb.textContent=up?"Верхняя неделя":"Нижняя неделя";renderSet();
+  var c="";for(var i=1;i<=6;i++){c+='<button class="chip'+(i===sel?" on":"")+(key(dateOf(i))===key(now)&&i!==sel?" td":"")+'" data-d="'+i+'">'+SH[i-1]+"</button>"}
+  var ch=document.getElementById("chips");ch.innerHTML=c;
+  ch.onclick=function(e){var b=e.target.closest("[data-d]");if(b){sel=+b.dataset.d;render()}};
+  var day={},T=sel===6?TS:TW,ds={},mins=now.getHours()*60+now.getMinutes();
+  Object.keys(S[sel]).forEach(function(n){var a=S[sel][n].filter(function(x){return!x[3]||x[3]===w});if(a.length)day[n]=a});
+  var rm=remote[k]||{};(rm.cancel||[]).forEach(function(n){if(day[n])ds[n]="Пары нет"});Object.keys(rm.pairs||{}).forEach(function(n){ds[n]=rm.pairs[n]});Object.assign(ds,subs[k]||{});
+  var all=Object.keys(day).concat(Object.keys(ds)).map(Number),h=rm.only?'<div class="pair sub"><div class="body"><span class="tag">Замена на день</span><div class="s">Только: '+esc(rm.only)+"</div></div></div>":"";
+  var sm=cfg.smg&&SMG[sel]?SMG[sel]:null,smShown=false;
+  function smg(){smShown=true;return '<div class="pair'+(isToday&&mins>=sm[0]&&mins<sm[1]?" now":"")+'"><div class="n">+</div><div class="body"><div class="tm">'+hm(sm[0])+"–"+hm(sm[1])+'</div><div class="row"><div><div class="s">Физкультура (СМГ)</div><div class="t">дополнительное занятие</div></div><div class="r">СМГ №3</div></div></div></div>'}
+  if(!all.length){h+=sm?"":'<div class="free">Пар нет</div>'}
+  else{
+    for(var n=Math.min.apply(null,all);n<=Math.max.apply(null,all);n++){
+      if(sm&&!smShown&&T[n]&&T[n][0]>sm[0])h+=smg();
+      var it=day[n],sb=ds[n],tt=T[n]?'<div class="tm">'+hm(T[n][0])+"–"+hm(T[n][1])+"</div>":"";
+      var cur=isToday&&T[n]&&mins>=T[n][0]&&mins<T[n][1]?" now":"";
+      if(sb){
+        h+='<div class="pair sub'+cur+'" data-n="'+n+'"><div class="n">'+n+'</div><div class="body">'+tt+'<span class="tag">Замена</span><div class="s">'+esc(sb)+"</div>"+(it?'<div class="old">'+esc(it.map(function(x){return x[0]}).join(", "))+"</div>":"")+noteHtml(k,n)+"</div></div>";
+      }else if(it){
+        h+='<div class="pair'+cur+'" data-n="'+n+'"><div class="n">'+n+'</div><div class="body">'+tt;
+        it.forEach(function(x){h+='<div class="row"><div><div class="s">'+esc(x[0])+'</div><div class="t">'+esc(x[1])+'</div></div><div class="r">'+esc(x[2])+"</div></div>"});
+        h+=noteHtml(k,n)+"</div></div>";
+      }else h+='<div class="pair gap"><div class="n">'+n+'</div><div class="body t">окно</div></div>';
+    }
+  }
+  if(sm&&!smShown)h+=smg();
+  var L=document.getElementById("list");L.innerHTML=h;
+  L.onclick=function(e){var p=e.target.closest("[data-n]");if(p)editSub(+p.dataset.n)};
+  renderLunch();remind();
+}
+function W(x){return cfg.cc&&WD[x]?WD[x]:x}
+function applyTheme(){var r=document.documentElement;if(cfg.theme==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",cfg.theme);if(cfg.hw)r.setAttribute("data-hw","1");else r.removeAttribute("data-hw");
+  if(cfg.cc)r.setAttribute("data-cc","1");else r.removeAttribute("data-cc");
+  DN=cfg.cc?DNC:DN0;
+  var tl={sched:"Расписание",labs:"Лабы",stip:"Стипендия",exam:"Сессия",more:"Ещё"};
+  for(var k in tl){var e1=document.getElementById("l-"+k);if(e1)e1.textContent=W(tl[k])}
+  var e2=document.getElementById("h-more");if(e2)e2.textContent=W("Ещё");
+  var e3=document.getElementById("pl");if(e3)e3.textContent=W("Платформа удалённого обучения");
+  fx();icons()}
+function icons(){
+  if(!document.querySelector)return;var hw=!!cfg.hw;
+  function at(q,a,v){var e=document.querySelector(q);if(e)e.setAttribute(a,v)}
+  at('link[rel="manifest"]',"href",hw?"manifest-hw.webmanifest":"manifest.webmanifest");
+  at('link[rel="icon"]',"href",hw?"icon-hw-192.png":"icon-192.png");
+  at('link[rel="apple-touch-icon"]',"href",hw?"icon-hw-180.png":"icon-180.png");
+  at('meta[name="theme-color"]',"content",hw?"#140a1f":(cfg.cc?"#0a3f8f":"#2f6fed"));
+}
+function fx(){
+  var e=document.getElementById("fx");if(!e)return;e.innerHTML="";
+  if(!(cfg.hw||cfg.cc)||cfg.fx===false)return;
+  if(cfg.cc){
+    if(e.style&&e.style.setProperty)e.style.setProperty("--can","url("+CAN+")");
+    var q='<span class="web">🌴</span>',F=["🥭","🥥","🌴","🍍"],i,w;
+    for(i=0;i<10;i++){w=26+(Math.random()*24|0);q+='<span class="can" style="left:'+(Math.random()*92|0)+'%;width:'+w+'px;height:'+Math.round(w/0.43)+'px;animation-duration:'+(14+(Math.random()*14|0))+'s;animation-delay:-'+(Math.random()*24|0)+'s"></span>'}
+    for(i=0;i<6;i++)q+='<span style="left:'+(Math.random()*94|0)+'%;font-size:'+(18+(Math.random()*18|0))+'px;animation-duration:'+(14+(Math.random()*12|0))+'s;animation-delay:-'+(Math.random()*20|0)+'s">'+F[i%4]+"</span>";
+    e.innerHTML=q;return}
+  var E=["🦇","👻","🎃","🕷️","💀","🍬","🌙","🦇"],h='<span class="web">🕸️</span>';
+  for(var i=0;i<14;i++)h+='<span style="left:'+(Math.random()*94|0)+'%;font-size:'+(18+(Math.random()*22|0))+'px;animation-duration:'+(12+(Math.random()*14|0))+'s;animation-delay:-'+(Math.random()*20|0)+'s">'+E[i%E.length]+"</span>";
+  e.innerHTML=h;
+}
+function renderSet(){
+  var el=document.getElementById("set");
+  var cur=cfg.hw?"Хэллоуин 🎃":cfg.cc?"Coconut 🥥":"Обычная · "+({light:"светлая",dark:"тёмная"}[cfg.theme]||"как в системе");
+  el.innerHTML='<div class="box" style="margin:0 0 12px"><h2>Настройки</h2><label class="opt" style="margin-top:0"><input type="checkbox" id="smg"'+(cfg.smg?" checked":"")+'><span><b>Я в СМГ по физкультуре</b><br><small class="t">Добавит занятия СМГ №3: вт и чт 9:25–10:20, сб 13:45–14:30</small></span></label></div>'
+   +'<button class="menu" id="gt"><span><b>Темы оформления</b><small>Сейчас: '+cur+'</small></span><i>›</i></button>';
+  el.querySelector("#gt").onclick=function(){go("themes")};
+  el.querySelector("#smg").onchange=function(){cfg.smg=this.checked;sv("tk412_cfg",cfg);autoDay();render()};
+}
+function renderThemes(){
+  var el=document.getElementById("v-themes"),m=cfg.hw?"hw":cfg.cc?"cc":"none";
+  var h='<button class="back" id="bk">‹ '+W("Ещё")+'</button><h1>Оформление</h1><div class="date">Темы</div><div class="th">';
+  [["none","🎨","Обычная","Светлая, тёмная или как в системе"],["hw","🎃","Хэллоуин","Тёмно-фиолетовый фон, летучие мыши, привидения и тыквы"],["cc","🥥","Coconut","Синий и оранжевый, как на банке Gorilla Mango Coconut. Меняет названия разделов и дней"]].forEach(function(x){
+    h+='<button class="thm'+(m===x[0]?" on":"")+'" data-m="'+x[0]+'"><i>'+x[1]+"</i><span><b>"+x[2]+"</b><small>"+x[3]+"</small></span><em>"+(m===x[0]?"✓":"")+"</em></button>"});
+  h+="</div>";
+  if(m==="none"){
+    h+='<div class="box"><h2>Цвета</h2><div class="seg">';
+    [["auto","Как в системе"],["light","Светлая"],["dark","Тёмная"]].forEach(function(x){h+='<button class="chip'+(cfg.theme===x[0]?" on":"")+'" data-th="'+x[0]+'">'+x[1]+"</button>"});
+    h+="</div></div>";
+  }else{
+    h+='<div class="box"><h2>Анимация</h2><label class="opt" style="margin-top:0"><input type="checkbox" id="fxc"'+(cfg.fx!==false?" checked":"")+'><span><b>Летающие '+(m==="cc"?"баночки":"смайлики")+'</b><br><small class="t">Движущиеся картинки на фоне</small></span></label>'
+      +(m==="hw"?'<small class="t" style="display:block;margin-top:12px">Иконка 🎃 применится к новым установкам. Чтобы сменить значок на главном экране, удалите ярлык и установите приложение заново</small>':"")+"</div>";
+  }
+  el.innerHTML=h;
+  el.onclick=function(e){
+    if(e.target.closest("#bk")){go("more");return}
+    var b=e.target.closest("[data-m]");
+    if(b){cfg.hw=b.dataset.m==="hw";cfg.cc=b.dataset.m==="cc";sv("tk412_cfg",cfg);applyTheme();render();renderThemes();return}
+    var c=e.target.closest("[data-th]");
+    if(c){cfg.theme=c.dataset.th;sv("tk412_cfg",cfg);applyTheme();renderThemes()}
+  };
+  var f=el.querySelector("#fxc");
+  if(f)f.onchange=function(){cfg.fx=this.checked;sv("tk412_cfg",cfg);applyTheme()};
+}
+// конец последней пары дня: с учётом недели, замен (в т.ч. «пары нет»), СМГ
+function lastEnd(d){
+  var dow=d.getDay();if(dow===0)return 0;
+  var k=key(d),w=upper(d)?"в":"н",T=dow===6?TS:TW,rm=remote[k]||{},ds={},all={},end=0;
+  Object.keys(S[dow]).forEach(function(n){if(S[dow][n].some(function(x){return!x[3]||x[3]===w}))all[n]=1});
+  (rm.cancel||[]).forEach(function(n){if(all[n])ds[n]="нет"});
+  Object.keys(rm.pairs||{}).forEach(function(n){ds[n]=rm.pairs[n];all[n]=1});
+  Object.keys(subs[k]||{}).forEach(function(n){ds[n]=subs[k][n];all[n]=1});
+  Object.keys(all).forEach(function(n){var t=ds[n];if(t&&/^\s*(пар[аы]?\s+)?нет\s*$/i.test(t))return;if(T[n]&&T[n][1]>end)end=T[n][1]});
+  if(cfg.smg&&SMG[dow]&&SMG[dow][1]>end)end=SMG[dow][1];
+  return end;
+}
+// какой день показывать сейчас: сегодня, пока не кончились пары, иначе ближайший день с парами
+function pickDay(n){
+  var d=new Date(n.getFullYear(),n.getMonth(),n.getDate()),mins=n.getHours()*60+n.getMinutes();
+  for(var i=0;i<9;i++){
+    var e=lastEnd(d);
+    if(e>0&&(i>0||mins<e))return d;
+    d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1);
+  }
+  return d;
+}
+var lastAuto="";
+function setBase(d){base=d;mon=new Date(d);mon.setDate(d.getDate()-(d.getDay()-1));sel=d.getDay()}
+function autoDay(){
+  now=new Date();var d=pickDay(now),k=key(d);
+  if(k!==lastAuto){lastAuto=k;setBase(d);render()}
+}
+function noteHtml(k,n){var x=notes[k+"|"+n];return x?'<div class="note">📝 '+esc(x.t||"Напоминание")+(x.at?" · ⏰ "+esc(x.at.replace("T"," ")):"")+"</div>":""}
+function pad(x){return("0"+x).slice(-2)}
+function fmtD(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00"}
+function editSub(n){
+  var k=key(dateOf(sel)),cur=(subs[k]||{})[n]||"",nt=notes[k+"|"+n]||{t:"",at:""},L=document.getElementById("list");
+  var box=document.createElement("div");box.className="box";
+  box.innerHTML='<h2>'+n+' пара</h2><input class="si" placeholder="Замена: например, ТЭС, каб. 406, или пары нет"><textarea class="ni" rows="2" placeholder="Заметка к паре" style="margin-top:8px"></textarea><div class="t" style="margin:8px 0 4px">Напомнить</div><input type="datetime-local" class="ai"><a class="cal" target="_blank" rel="noopener" style="display:none">Добавить напоминание в календарь</a><div class="btns"><button class="x">Убрать</button><button class="pri">Сохранить</button></div>';
+  L.querySelector('[data-n="'+n+'"]').after(box);
+  var si=box.querySelector(".si"),ni=box.querySelector(".ni"),ai=box.querySelector(".ai"),cal=box.querySelector(".cal");
+  si.value=cur;ni.value=nt.t;ai.value=nt.at||"";L.onclick=null;
+  function link(){var v=ai.value;if(!v){cal.style.display="none";return}var a=new Date(v),e=new Date(+a+9e5);cal.href="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("ТК 412, "+n+" пара: "+(ni.value||"напоминание"))+"&dates="+fmtD(a)+"/"+fmtD(e)+"&ctz=Europe%2FMinsk";cal.style.display="block"}
+  ai.onchange=link;ni.oninput=link;link();
+  function done(clear){
+    var v=clear?"":si.value.trim(),t=clear?"":ni.value.trim(),q=k+"|"+n;
+    subs[k]=subs[k]||{};if(v)subs[k][n]=v;else delete subs[k][n];
+    if(t||(!clear&&ai.value)){notes[q]={t:t,at:ai.value};delete seen[q]}else delete notes[q];
+    sv("tk412_subs",subs);sv("tk412_notes",notes);sv("tk412_seen",seen);render()}
+  box.querySelector(".pri").onclick=function(){done(false)};
+  box.querySelector(".x").onclick=function(){done(true)};
+}
+function remind(){
+  var h="",now=new Date();
+  Object.keys(notes).forEach(function(q){var x=notes[q],t=x.at&&new Date(x.at);
+    if(t&&t<=now&&now-t<1728e5&&!seen[q])h+='<div class="pair sub"><div class="body"><span class="tag">Напоминание · '+q.split("|")[1]+' пара</span><div class="s">'+esc(x.t||"Заметка")+'</div></div><button class="wkb" data-r="'+q+'">Ок</button></div>'});
+  var el=document.getElementById("rem");el.innerHTML=h;
+  el.onclick=function(e){var b=e.target.closest("button[data-r]");if(b){seen[b.dataset.r]=1;sv("tk412_seen",seen);remind()}};
+}
+function syncMenu(force){
+  if(!API){mst="Сервер не подключён";renderLunch();return}
+  mst="Обновляю…";renderLunch();
+  fetch(API+"/menu"+(force?"?force=1":"")).then(function(r){return r.text()}).then(function(t){
+    var j;try{j=JSON.parse(t)}catch(e){mst="⚠ Сервер не отвечает на /menu. Обновите код воркера в Cloudflare";return}
+    if(j.sections&&j.sections.length){
+      if(dn(j.updated)>=dn(LUPD)){LUNCH=j.sections.map(function(q){return[q.t,q.items.map(function(x){return[x.n,x.w,x.p,x.d]})]});LUPD=j.updated||LUPD;sv("tk412_menu",{s:LUNCH,u:LUPD})}
+      mst=j.stale?"⚠ Сервер не смог обновить меню: "+(j.error||"неизвестная ошибка"):"Проверено в "+pad(new Date().getHours())+":"+pad(new Date().getMinutes())+(j.src?" · "+j.src:"")
+    }else mst="⚠ "+(j.error||"Сервер вернул пустое меню")
+  }).catch(function(){mst="⚠ Нет связи с сервером"}).then(renderLunch);
+}
+function sync(){
+  if(!API)return;
+  fetch(API+"/subs?g="+encodeURIComponent(GROUP)).then(function(r){return r.json()}).then(function(j){remote=j;sv("tk412_remote",j);autoDay();render()}).catch(function(){});
+  syncMenu();
+}
+function renderLunch(){
+  var el=document.getElementById("lunch");
+  var h='<details class="lunch"'+(lopen?" open":"")+'><summary>Бизнес-ланч · Губернский трактир<span>12:00–15:00 · меню с clever.by от '+LUPD+'</span></summary><div class="row" style="padding:0 0 8px"><span class="t">'+esc(mst||"Меню обновляется при открытии приложения")+'</span><button class="l" id="mr">Обновить</button></div>';
+  LUNCH.forEach(function(s){h+='<div class="sec">'+s[0]+"</div>";s[1].forEach(function(x){h+='<div class="it"><div>'+esc(x[0])+"<small>"+esc(x[1]+(x[3]?" · "+x[3]:""))+'</small></div><div class="pr">'+x[2]+" р.</div></div>"})});
+  el.innerHTML=h+"</details>";
+}
+// ---------- Лабораторные ----------
+var LABS=[
+{id:"te",t:"Техническая электроника",s:"Рабочая тетрадь 2026 · ЛР 1–9",n0:1,l:["Назначение и возможности Electronic Workbench. Правила ТБ при работе на ПК","Исследование выпрямительного диода","Исследование стабилитрона","Исследование БТ, включённого по схеме с ОБ в статическом режиме","Исследование БТ, включённого по схеме с ОЭ в статическом режиме","Исследование ПТ в статическом режиме","Исследование фотодиода","Исследование оптрона","Исследование БТ, включённого по схеме с ОЭ в нагрузочном режиме"]},
+{id:"met",t:"Метрология и специальные измерения",s:"Тетрадь 1 семестра · ЛР 2–14",n0:2,l:["Изучение работы мер и вспомогательных устройств","Изучение работы вольтметров","Изучение работы НЧ измерительного генератора типа «RC»","Изучение работы электронного осциллографа","Измерение сопротивлений заземлений","Измерение параметров сигналов электронным осциллографом","Измерение сопротивлений омметром и мостом постоянного тока","Изучение работы измерительного генератора широкого диапазона частот","Измерение частоты с помощью осциллографа","Изучение работы цифрового частотомера","Измерение амплитудной характеристики четырёхполюсника","Измерение нелинейных искажений методом подавления основной гармоники","Измерение реактивных сопротивлений мостом переменного тока"]},
+{id:"tes",t:"Теория электрической связи",s:"Тетрадь 2 семестра · ЛР 7–12",n0:7,l:["Исследование моделей помехоустойчивых блочных кодеров","Исследование умножителя частоты","Исследование LC-автогенератора","Исследование RC-автогенератора","Исследование модели DPSK относительно-фазового модулятора (ОФМ)","Исследование детектора АМ сигналов"]}
+];
+var lopen=true,labs=ld("tk412_labs",{}),openL={},ex=ld("tk412_ex",{});
+function renderLabs(){
+  var el=document.getElementById("v-labs"),tot=0,dn=0,h="";
+  LABS.forEach(function(q){var d=0;q.l.forEach(function(_,i){if(labs[q.id+":"+(q.n0+i)])d++});q.d=d;tot+=q.l.length;dn+=d});
+  h='<h1>Лабораторные работы</h1><div class="date">Сделано '+dn+' из '+tot+'</div><div class="bar"><i style="width:'+(tot?Math.round(dn/tot*100):0)+'%"></i></div>';
+  LABS.forEach(function(q){
+    h+='<details class="subj"'+(openL[q.id]?" open":"")+' data-s="'+q.id+'"><summary><b>'+esc(q.t)+"</b><span>"+esc(q.s)+"</span><em>"+q.d+"/"+q.l.length+"</em></summary>";
+    q.l.forEach(function(t,i){var n=q.n0+i,k=q.id+":"+n;h+='<label class="lab"><input type="checkbox" data-k="'+k+'"'+(labs[k]?" checked":"")+"><span><b>№"+n+"</b> "+esc(t)+"</span></label>"});
+    h+="</details>"});
+  el.innerHTML=h+'<div class="hint">Отметки хранятся на этом устройстве</div>';
+}
+// ---------- Стипендия ----------
+var HOL=["01-01","01-07","03-08","05-01","05-09","07-03","11-07","12-25"],HOLX=["2026-04-21","2027-05-11","2028-04-25"]; // фикс. праздники РБ и Радуница
+function isOff(d){var w=d.getDay(),m=pad(d.getMonth()+1)+"-"+pad(d.getDate());return w===0||w===6||HOL.indexOf(m)>=0||HOLX.indexOf(d.getFullYear()+"-"+m)>=0}
+function payDay(y,m){var d=new Date(y,m,21);while(isOff(d))d.setDate(d.getDate()-1);return d}
+function pl(n,a,b,c){var m=n%10,h=n%100;return m===1&&h!==11?a:(m>=2&&m<=4&&(h<10||h>=20)?b:c)}
+function dm(d){return d.getDate()+" "+MO[d.getMonth()]}
+function renderStip(){
+  var t=new Date(now.getFullYear(),now.getMonth(),now.getDate()),list=[];
+  for(var k=0;list.length<4&&k<16;k++){var d=payDay(t.getFullYear(),t.getMonth()+k);if(d>=t)list.push(d)}
+  var nx=list[0],pv=payDay(nx.getFullYear(),nx.getMonth()-1),n=Math.round((nx-t)/864e5),pr=Math.round((t-pv)/(nx-pv)*100);
+  var orig=new Date(nx.getFullYear(),nx.getMonth(),21);
+  var h='<h1>'+W("Стипендия")+'</h1><div class="hero"><div class="num">'+(n===0?(cfg.hw?"🎃":"🎉"):n)+'</div><div class="lbl">'+(n===0?W("Стипендия")+" сегодня":pl(n,"день","дня","дней")+(cfg.cc?" до Лас Вегаса":" до стипендии"))+'</div><div class="t" style="margin-top:6px">'+DN[nx.getDay()].toLowerCase()+", "+dm(nx)+"</div></div>";
+  h+='<div class="bar"><i style="width:'+Math.max(0,Math.min(100,pr))+'%"></i></div>';
+  if(nx.getDate()!==21)h+='<div class="pair sub" style="cursor:default"><div class="body"><span class="tag">Выплата раньше</span><div class="s">21 '+MO[orig.getMonth()]+" — "+DN[orig.getDay()].toLowerCase()+(isOff(orig)&&orig.getDay()%6!==0?" (праздник)":"")+", поэтому деньги придут "+dm(nx)+"</div></div></div>";
+  h+='<div class="box"><h2>Ближайшие выплаты</h2>';
+  list.forEach(function(d){var c=Math.round((d-t)/864e5);h+='<div class="pay"><span>'+dm(d)+' <span class="t">· '+DN[d.getDay()].toLowerCase()+'</span></span><b>'+(c===0?"сегодня":c+" дн.")+"</b></div>"});
+  document.getElementById("v-stip").innerHTML=h+'</div><div class="hint">Выплата 21-го числа. Если оно выходной или праздник, считается предыдущий рабочий день. Переносы рабочих дней не учитываются.</div>';
+}
+// ---------- Сессия ----------
+var SESS=[
+{id:"w",t:"Зимняя сессия",def:"2027-01-05",sub:"начало по графику образовательного процесса",ex:[["tes","ТЭС"],["cimpu","ЦиМПУ"]]},
+{id:"s",t:"Летняя сессия",def:"2027-06-29",sub:"начало по графику, предметы пока неизвестны",ex:[]}
+];
+function daysTo(v){var t=new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.round((new Date(v+"T00:00:00")-t)/864e5)}
+function cdText(n){return n>0?"через "+n+" "+pl(n,"день","дня","дней"):n===0?"сегодня":Math.abs(n)+" "+pl(Math.abs(n),"день","дня","дней")+" назад"}
+function renderExam(){
+  var h='<h1>'+W("Сессия")+'</h1><div class="date">Экзамены</div>';
+  SESS.forEach(function(q){
+    var v=ex[q.id]||q.def,n=daysTo(v);
+    h+='<div class="box" style="margin-top:0;margin-bottom:12px"><div class="row"><div><div class="s">'+q.t+'</div><div class="t">'+q.sub+'</div></div><div class="cd"><b>'+(n>0?n:n===0?"0":"–")+"</b><small>"+(n>0?pl(n,"день","дня","дней"):n===0?"сегодня":"идёт или прошла")+'</small></div></div><div class="t" style="margin:12px 0 4px">Дата начала</div><input type="date" data-e="'+q.id+'" value="'+v+'">';
+    q.ex.forEach(function(e){var k=q.id+":"+e[0],d=ex[k];h+='<div class="ex"><div><b>'+e[1]+'</b><div class="t">'+(d?cdText(daysTo(d)):"дата пока неизвестна")+'</div></div><input type="date" data-e="'+k+'" value="'+(d||"")+'"></div>'});
+    h+="</div>"});
+  document.getElementById("v-exam").innerHTML=h+'<div class="hint">Даты экзаменов введите, когда появится расписание сессии</div>';
+}
+// ---------- Вкладки ----------
+var TABS=["sched","labs","stip","exam","more","themes"];
+function go(t){
+  var tab=t==="themes"?"more":t;
+  TABS.forEach(function(x){document.getElementById("v-"+x).hidden=x!==t});
+  ["sched","labs","stip","exam","more"].forEach(function(x){document.getElementById("t-"+x).className=x===tab?"on":""});
+  if(t==="labs")renderLabs();if(t==="stip")renderStip();if(t==="exam")renderExam();if(t==="themes")renderThemes();if(t==="more")renderSet();
+  try{window.scrollTo(0,0)}catch(e){}
+}
+document.getElementById("tabs").onclick=function(e){var b=e.target.closest("[data-t]");if(b)go(b.dataset.t)};
+document.getElementById("v-labs").onchange=function(e){var c=e.target;if(c.dataset&&c.dataset.k){if(c.checked)labs[c.dataset.k]=1;else delete labs[c.dataset.k];sv("tk412_labs",labs);renderLabs()}};
+document.getElementById("v-labs").addEventListener("toggle",function(e){var d=e.target;if(d.dataset&&d.dataset.s)openL[d.dataset.s]=d.open},true);
+document.getElementById("lunch").addEventListener("toggle",function(e){lopen=e.target.open},true);
+document.getElementById("lunch").onclick=function(e){if(e.target.id==="mr")syncMenu(true)};
+document.getElementById("v-exam").onchange=function(e){var c=e.target;if(c.dataset&&c.dataset.e){if(c.value)ex[c.dataset.e]=c.value;else delete ex[c.dataset.e];sv("tk412_ex",ex);renderExam()}};
+
+autoDay();go('sched');render();sync();
+document.addEventListener("visibilitychange",function(){if(!document.hidden){autoDay();sync();remind()}});
+setInterval(function(){autoDay();remind()},60000);
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
+</script>
+</body>
+</html>
