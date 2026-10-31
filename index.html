@@ -299,9 +299,12 @@ function fx(){
 function renderSet(){
   var el=document.getElementById("set");
   var cur=cfg.hw?"Хэллоуин 🎃":cfg.cc?"Coconut 🥥":cfg.lg?"Liquid Glass 🫧":"Обычная · "+({light:"светлая",dark:"тёмная"}[cfg.theme]||"как в системе");
-  el.innerHTML='<div class="box" style="margin:0 0 12px"><h2>Настройки</h2><label class="opt" style="margin-top:0"><input type="checkbox" id="smg"'+(cfg.smg?" checked":"")+'><span><b>Я в СМГ по физкультуре</b><br><small class="t">Добавит занятия СМГ №3: вт и чт 9:25–10:20, сб 13:45–14:30</small></span></label></div>'
+  el.innerHTML='<div class="box" style="margin:0 0 12px"><h2>Настройки</h2><label class="opt" style="margin-top:0"><input type="checkbox" id="smg"'+(cfg.smg?" checked":"")+'><span><b>Я в СМГ по физкультуре</b><br><small class="t">Добавит занятия СМГ №3: вт и чт 9:25–10:20, сб 13:45–14:30</small></span></label><label class="opt"><input type="checkbox" id="pn"><span><b>Уведомления о заменах</b><br><small class="t" id="pns"></small></span></label><button class="l" id="pt" style="margin:8px 0 0 34px;display:none">Отправить тест</button></div>'
    +'<button class="menu" id="gt"><span><b>Темы оформления</b><small>Сейчас: '+cur+'</small></span><i>›</i></button>';
   el.querySelector("#gt").onclick=function(){go("themes")};
+  el.querySelector("#pn").onchange=function(){if(this.checked)pushOn();else pushOff()};
+  el.querySelector("#pt").onclick=pushTest;
+  pushState();
   el.querySelector("#smg").onchange=function(){cfg.smg=this.checked;sv("tk412_cfg",cfg);autoDay();render()};
 }
 function renderThemes(){
@@ -357,6 +360,41 @@ function setBase(d){base=d;mon=new Date(d);mon.setDate(d.getDate()-(d.getDay()-1
 function autoDay(){
   now=new Date();var d=pickDay(now),k=key(d);
   if(k!==lastAuto){lastAuto=k;setBase(d);render()}
+}
+// ---------- Уведомления о заменах (Web Push) ----------
+var PUBOK="PushManager" in window&&"serviceWorker" in navigator&&"Notification" in window,pmsg="";
+function u8(b){var r=atob((b+"=".repeat((4-b.length%4)%4)).replace(/-/g,"+").replace(/_/g,"/")),o=new Uint8Array(r.length);for(var i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o}
+function pj(path,body){return fetch(API+path,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)}).then(function(r){return r.json()})}
+function pushState(){
+  var cb=document.getElementById("pn"),tx=document.getElementById("pns"),bt=document.getElementById("pt");if(!cb||!tx)return;
+  bt.style.display="none";
+  if(!API){tx.textContent="Сервер не подключён";cb.disabled=true;return}
+  if(!PUBOK){tx.textContent="Браузер не поддерживает уведомления. На iPhone сначала установите приложение на экран «Домой»";cb.disabled=true;return}
+  if(Notification.permission==="denied"){tx.textContent="Уведомления запрещены в настройках браузера или сайта";cb.checked=false;return}
+  navigator.serviceWorker.ready.then(function(r){return r.pushManager.getSubscription()}).then(function(sub){
+    cb.checked=!!sub;bt.style.display=sub?"inline":"none";
+    tx.textContent=pmsg||(sub?"Включены на этом устройстве":"Придёт сообщение, когда появится замена для ТК412");
+  }).catch(function(){tx.textContent="Не удалось проверить состояние"});
+}
+function pushOn(){
+  pmsg="Включаю…";pushState();
+  Notification.requestPermission().then(function(p){if(p!=="granted")throw new Error("Разрешение не выдано");return navigator.serviceWorker.ready})
+  .then(function(reg){return fetch(API+"/push/key").then(function(r){return r.json()}).then(function(j){return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(j.key)})})})
+  .then(function(sub){return pj("/push/sub",sub.toJSON())})
+  .then(function(j){if(j.error)throw new Error(j.error);pmsg="Включены на этом устройстве"})
+  .catch(function(e){pmsg="⚠ "+(e.message||"не удалось включить")}).then(pushState);
+}
+function pushOff(){
+  navigator.serviceWorker.ready.then(function(r){return r.pushManager.getSubscription()}).then(function(sub){
+    if(!sub)return;var ep=sub.endpoint;return sub.unsubscribe().then(function(){return pj("/push/unsub",{endpoint:ep})})})
+  .then(function(){pmsg="Выключены"}).catch(function(){pmsg="⚠ Не удалось выключить"}).then(pushState);
+}
+function pushTest(){
+  pmsg="Отправляю тест…";pushState();
+  navigator.serviceWorker.ready.then(function(r){return r.pushManager.getSubscription()})
+  .then(function(sub){return sub?pj("/push/test",sub.toJSON()):{error:"нет подписки"}})
+  .then(function(j){pmsg=j.status&&j.status<300?"Тест отправлен, уведомление придёт через пару секунд":"⚠ Тест не удался: "+(j.error||("ответ "+j.status))})
+  .catch(function(){pmsg="⚠ Нет связи с сервером"}).then(pushState);
 }
 function noteHtml(k,n){var x=notes[k+"|"+n];return x?'<div class="note">📝 '+esc(x.t||"Напоминание")+(x.at?" · ⏰ "+esc(x.at.replace("T"," ")):"")+"</div>":""}
 function pad(x){return("0"+x).slice(-2)}
