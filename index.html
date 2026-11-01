@@ -90,21 +90,21 @@ input[type=checkbox]{width:22px;height:22px;padding:0;margin:0;flex:none;accent-
 .ex input{width:150px;margin:0}
 .cd{text-align:right}.cd b{font-size:28px;color:var(--ac);line-height:1}.cd small{display:block;color:var(--mut);font-size:12px}
 .pay{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
-.tabs .b,.tabs .c{display:none}
+.tabs .b,.tabs .c,.tabs .d{display:none}
 #fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
 #fx span{position:absolute;top:0;opacity:0;animation:fl linear infinite}
 #fx .web{top:env(safe-area-inset-top,0px);left:0;font-size:72px;opacity:.35;line-height:1;animation:none}
 @keyframes fl{0%{transform:translateY(105vh) rotate(0);opacity:0}10%,90%{opacity:.85}100%{transform:translateY(-12vh) rotate(360deg);opacity:0}}
 @keyframes pulse{50%{text-shadow:0 0 36px var(--ac)}}
 @keyframes glow{50%{box-shadow:0 0 18px var(--ac)}}
-:root[data-hw="1"]{color-scheme:dark;--bg:#140a1f;--card:#1f1230;--tx:#f3e9ff;--mut:#a995c2;--line:#33204a;--ac:#ff8a1f;--acbg:#2e1a0f;--warn:#b57cff;--warnbg:#241238}
-:root[data-hw="1"] #fx{background:radial-gradient(circle at 85% 0,#3a1b52 0,transparent 55%)}
-:root[data-hw="1"] .tabs .a{display:none}
-:root[data-hw="1"] .tabs .b{display:block}
-:root[data-hw="1"] #dt::before{content:"🎃 "}
-:root[data-hw="1"] h1::after{content:" 🦇"}
-:root[data-hw="1"] .hero .num{animation:pulse 2.4s ease-in-out infinite}
-:root[data-hw="1"] .now{animation:glow 2.4s ease-in-out infinite}
+:root[data-au="1"]{color-scheme:dark;--bg:#2a1710;--card:#3d2418;--tx:#fff1de;--mut:#d3ac8c;--line:#5e3b27;--ac:#ff9a3c;--acbg:#4d2c19;--warn:#ffd166;--warnbg:#5b2d12}
+:root[data-au="1"] #fx{background:radial-gradient(circle at 12% 0,rgba(255,140,40,.38) 0,transparent 52%),radial-gradient(circle at 100% 100%,rgba(190,55,30,.42) 0,transparent 58%)}
+:root[data-au="1"] .tabs .a{display:none}
+:root[data-au="1"] .tabs .b{display:block}
+:root[data-au="1"] #dt::before{content:"🍂 "}
+:root[data-au="1"] h1::after{content:" 🍁"}
+:root[data-au="1"] .hero .num{animation:pulse 2.4s ease-in-out infinite}
+:root[data-au="1"] .now{animation:glow 2.4s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){#fx span,.hero .num,.now{animation:none!important}#fx span:not(.orb){display:none}}
 @keyframes flc{0%{transform:translateY(105vh) rotate(-14deg);opacity:0}10%,90%{opacity:.95}50%{transform:translateY(45vh) translateX(14px) rotate(14deg)}100%{transform:translateY(-22vh) rotate(-14deg);opacity:0}}
 #fx .can{background:var(--can) center/contain no-repeat;animation-name:flc}
@@ -153,6 +153,16 @@ main>*{max-width:480px;margin-left:auto;margin-right:auto}
 :root[data-lg="1"] .tabs{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:456px;margin:0 auto;padding:6px;border:1px solid var(--line);border-radius:30px;background-color:var(--card);background-image:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.05) 50%,rgba(255,255,255,0) 75%);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 14px 36px rgba(0,0,0,.22)}
 :root[data-lg="1"] .tabs button.on{background:var(--acbg);border-radius:22px}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root[data-lg="1"]{--card:rgba(255,255,255,.78)}}
+@keyframes fall{0%{transform:translate(0,-12vh) rotate(0);opacity:0}8%,92%{opacity:.9}25%{transform:translate(26px,22vh) rotate(90deg)}50%{transform:translate(-20px,48vh) rotate(180deg)}75%{transform:translate(22px,76vh) rotate(270deg)}100%{transform:translate(0,108vh) rotate(360deg);opacity:0}}
+#fx .lf{animation-name:fall}
+:root[data-hw="1"]{color-scheme:dark;--bg:#140a1f;--card:#1f1230;--tx:#f3e9ff;--mut:#a995c2;--line:#33204a;--ac:#ff8a1f;--acbg:#2e1a0f;--warn:#b57cff;--warnbg:#241238}
+:root[data-hw="1"] #fx{background:radial-gradient(circle at 85% 0,#3a1b52 0,transparent 55%)}
+:root[data-hw="1"] .tabs .a{display:none}
+:root[data-hw="1"] .tabs .d{display:block}
+:root[data-hw="1"] #dt::before{content:"🎃 "}
+:root[data-hw="1"] h1::after{content:" 🦇"}
+:root[data-hw="1"] .hero .num{animation:pulse 2.4s ease-in-out infinite}
+:root[data-hw="1"] .now{animation:glow 2.4s ease-in-out infinite}
 .hint{font-size:12px;color:var(--mut);margin-top:16px;text-align:center}
 </style>
 </head>
@@ -179,11 +189,11 @@ main>*{max-width:480px;margin-left:auto;margin-right:auto}
 </section>
 </main>
 <nav class="tabs" id="tabs">
-<button data-t="sched" id="t-sched" class="on"><i class="a">📅</i><i class="b">🎃</i><i class="c">🥭</i><span id="l-sched">Расписание</span></button>
-<button data-t="labs" id="t-labs"><i class="a">🧪</i><i class="b">🔮</i><i class="c">🍍</i><span id="l-labs">Лабы</span></button>
-<button data-t="stip" id="t-stip"><i class="a">💰</i><i class="b">🍬</i><i class="c">🎰</i><span id="l-stip">Стипендия</span></button>
-<button data-t="exam" id="t-exam"><i class="a">📝</i><i class="b">👻</i><i class="c">🌴</i><span id="l-exam">Сессия</span></button>
-<button data-t="more" id="t-more"><i class="a">⚙️</i><i class="b">🕷️</i><i class="c">🥥</i><span id="l-more">Ещё</span></button>
+<button data-t="sched" id="t-sched" class="on"><i class="a">📅</i><i class="b">🍂</i><i class="d">🎃</i><i class="c">🥭</i><span id="l-sched">Расписание</span></button>
+<button data-t="labs" id="t-labs"><i class="a">🧪</i><i class="b">🍄</i><i class="d">🔮</i><i class="c">🍍</i><span id="l-labs">Лабы</span></button>
+<button data-t="stip" id="t-stip"><i class="a">💰</i><i class="b">🌰</i><i class="d">🍬</i><i class="c">🎰</i><span id="l-stip">Стипендия</span></button>
+<button data-t="exam" id="t-exam"><i class="a">📝</i><i class="b">🍁</i><i class="d">👻</i><i class="c">🌴</i><span id="l-exam">Сессия</span></button>
+<button data-t="more" id="t-more"><i class="a">⚙️</i><i class="b">🍃</i><i class="d">🕷️</i><i class="c">🥥</i><span id="l-more">Ещё</span></button>
 </nav>
 <script>
 // [предмет, преподаватель, кабинет, неделя: "в" верхняя / "н" нижняя / пусто — каждую]
@@ -264,6 +274,7 @@ function render(){
 }
 function W(x){return cfg.cc&&WD[x]?WD[x]:x}
 function applyTheme(){var r=document.documentElement;if(cfg.theme==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",cfg.theme);if(cfg.hw)r.setAttribute("data-hw","1");else r.removeAttribute("data-hw");
+  if(cfg.au)r.setAttribute("data-au","1");else r.removeAttribute("data-au");
   if(cfg.lg)r.setAttribute("data-lg","1");else r.removeAttribute("data-lg");
   if(cfg.cc)r.setAttribute("data-cc","1");else r.removeAttribute("data-cc");
   DN=cfg.cc?DNC:DN0;
@@ -273,16 +284,16 @@ function applyTheme(){var r=document.documentElement;if(cfg.theme==="auto")r.rem
   var e3=document.getElementById("pl");if(e3)e3.textContent=W("Платформа удалённого обучения");
   fx();icons()}
 function icons(){
-  if(!document.querySelector)return;var hw=!!cfg.hw;
+  if(!document.querySelector)return;var au=!!cfg.au,hw=!!cfg.hw;
   function at(q,a,v){var e=document.querySelector(q);if(e)e.setAttribute(a,v)}
-  at('link[rel="manifest"]',"href",hw?"manifest-hw.webmanifest":"manifest.webmanifest");
-  at('link[rel="icon"]',"href",hw?"icon-hw-192.png":"icon-192.png");
-  at('link[rel="apple-touch-icon"]',"href",hw?"icon-hw-180.png":"icon-180.png");
-  at('meta[name="theme-color"]',"content",hw?"#140a1f":(cfg.cc?"#0a3f8f":(cfg.lg?"#6a8fd8":"#2f6fed")));
+  at('link[rel="manifest"]',"href",hw?"manifest-hw.webmanifest":au?"manifest-au.webmanifest":"manifest.webmanifest");
+  at('link[rel="icon"]',"href",hw?"icon-hw-192.png":au?"icon-au-192.png":"icon-192.png");
+  at('link[rel="apple-touch-icon"]',"href",hw?"icon-hw-180.png":au?"icon-au-180.png":"icon-180.png");
+  at('meta[name="theme-color"]',"content",hw?"#140a1f":au?"#2a1710":(cfg.cc?"#0a3f8f":(cfg.lg?"#6a8fd8":"#2f6fed")));
 }
 function fx(){
   var e=document.getElementById("fx");if(!e)return;e.innerHTML="";
-  if(!(cfg.hw||cfg.cc||cfg.lg))return;
+  if(!(cfg.hw||cfg.au||cfg.cc||cfg.lg))return;
   if(cfg.lg){
     var P=[["--o1","-12%","-8%",300,22],["--o2","48%","22%",340,26],["--o3","-6%","58%",320,24]],g="";
     P.forEach(function(x){g+='<span class="orb" style="left:'+x[1]+';top:'+x[2]+';width:'+x[3]+'px;height:'+x[3]+'px;background:var('+x[0]+');animation-duration:'+x[4]+'s'+(cfg.fx===false?';animation:none':'')+'"></span>'});
@@ -294,13 +305,17 @@ function fx(){
     for(i=0;i<10;i++){w=26+(Math.random()*24|0);q+='<span class="can" style="left:'+(Math.random()*92|0)+'%;width:'+w+'px;height:'+Math.round(w/0.43)+'px;animation-duration:'+(14+(Math.random()*14|0))+'s;animation-delay:-'+(Math.random()*24|0)+'s"></span>'}
     for(i=0;i<6;i++)q+='<span style="left:'+(Math.random()*94|0)+'%;font-size:'+(18+(Math.random()*18|0))+'px;animation-duration:'+(14+(Math.random()*12|0))+'s;animation-delay:-'+(Math.random()*20|0)+'s">'+F[i%4]+"</span>";
     e.innerHTML=q;return}
-  var E=["🦇","👻","🎃","🕷️","💀","🍬","🌙","🦇"],h='<span class="web">🕸️</span>';
-  for(var i=0;i<14;i++)h+='<span style="left:'+(Math.random()*94|0)+'%;font-size:'+(18+(Math.random()*22|0))+'px;animation-duration:'+(12+(Math.random()*14|0))+'s;animation-delay:-'+(Math.random()*20|0)+'s">'+E[i%E.length]+"</span>";
+  if(cfg.hw){
+    var E=["🦇","👻","🎃","🕷️","💀","🍬","🌙","🦇"],hh='<span class="web">🕸️</span>';
+    for(var k=0;k<14;k++)hh+='<span style="left:'+(Math.random()*94|0)+'%;font-size:'+(18+(Math.random()*22|0))+'px;animation-duration:'+(12+(Math.random()*14|0))+'s;animation-delay:-'+(Math.random()*20|0)+'s">'+E[k%E.length]+"</span>";
+    e.innerHTML=hh;return}
+  var L=["🍂","🍁","🍃","🍂","🍁","🌰","🍄"],h='<span class="web">🍁</span>';
+  for(var i=0;i<16;i++)h+='<span class="lf" style="left:'+(Math.random()*94|0)+'%;font-size:'+(18+(Math.random()*20|0))+'px;animation-duration:'+(13+(Math.random()*14|0))+'s;animation-delay:-'+(Math.random()*24|0)+'s">'+L[i%L.length]+"</span>";
   e.innerHTML=h;
 }
 function renderSet(){
   var el=document.getElementById("set");
-  var cur=cfg.hw?"Хэллоуин 🎃":cfg.cc?"Coconut 🥥":cfg.lg?"Liquid Glass 🫧":"Обычная · "+({light:"светлая",dark:"тёмная"}[cfg.theme]||"как в системе");
+  var cur=cfg.hw?"Хэллоуин 🎃":cfg.au?"Осень 🍂":cfg.cc?"Coconut 🥥":cfg.lg?"Liquid Glass 🫧":"Обычная · "+({light:"светлая",dark:"тёмная"}[cfg.theme]||"как в системе");
   el.innerHTML='<div class="box" style="margin:0 0 12px"><h2>Настройки</h2><label class="opt" style="margin-top:0"><input type="checkbox" id="smg"'+(cfg.smg?" checked":"")+'><span><b>Я в СМГ по физкультуре</b><br><small class="t">Добавит занятия СМГ №3: вт и чт 9:25–10:20, сб 13:45–14:30</small></span></label><label class="opt"><input type="checkbox" id="pn"><span><b>Уведомления о заменах</b><br><small class="t" id="pns"></small></span></label><button class="l" id="pt" style="margin:8px 0 0 34px;display:none">Отправить тест</button></div>'
    +'<button class="menu" id="gt"><span><b>Темы оформления</b><small>Сейчас: '+cur+'</small></span><i>›</i></button>';
   el.querySelector("#gt").onclick=function(){go("themes")};
@@ -310,9 +325,9 @@ function renderSet(){
   el.querySelector("#smg").onchange=function(){cfg.smg=this.checked;sv("tk412_cfg",cfg);autoDay();render()};
 }
 function renderThemes(){
-  var el=document.getElementById("v-themes"),m=cfg.hw?"hw":cfg.cc?"cc":cfg.lg?"lg":"none";
+  var el=document.getElementById("v-themes"),m=cfg.hw?"hw":cfg.au?"au":cfg.cc?"cc":cfg.lg?"lg":"none";
   var h='<button class="back" id="bk">‹ '+W("Ещё")+'</button><h1>Оформление</h1><div class="date">Темы</div><div class="th">';
-  [["none","🎨","Обычная","Светлая, тёмная или как в системе"],["lg","🫧","Liquid Glass","Полупрозрачное стекло в духе iOS: размытие, блики и мягкий живой фон"],["hw","🎃","Хэллоуин","Тёмно-фиолетовый фон, летучие мыши, привидения и тыквы"],["cc","🥥","Coconut","Синий и оранжевый, как на банке Gorilla Mango Coconut. Меняет названия разделов и дней"]].forEach(function(x){
+  [["none","🎨","Обычная","Светлая, тёмная или как в системе"],["lg","🫧","Liquid Glass","Полупрозрачное стекло в духе iOS: размытие, блики и мягкий живой фон"],["hw","🎃","Хэллоуин","Тёмно-фиолетовый фон, летучие мыши, привидения и тыквы"],["au","🍂","Осень","Тёплые коричнево-оранжевые цвета и падающие листья"],["cc","🥥","Coconut","Синий и оранжевый, как на банке Gorilla Mango Coconut. Меняет названия разделов и дней"]].forEach(function(x){
     h+='<button class="thm'+(m===x[0]?" on":"")+'" data-m="'+x[0]+'"><i>'+x[1]+"</i><span><b>"+x[2]+"</b><small>"+x[3]+"</small></span><em>"+(m===x[0]?"✓":"")+"</em></button>"});
   h+="</div>";
   if(m==="none"||m==="lg"){
@@ -321,14 +336,14 @@ function renderThemes(){
     h+="</div></div>";
   }
   if(m!=="none"){
-    h+='<div class="box"><h2>Анимация</h2><label class="opt" style="margin-top:0"><input type="checkbox" id="fxc"'+(cfg.fx!==false?" checked":"")+'><span><b>'+(m==="cc"?"Летающие баночки":m==="hw"?"Летающие смайлики":"Живой фон")+'</b><br><small class="t">'+(m==="lg"?"Плавающие цветные блики за стеклом":"Движущиеся картинки на фоне")+'</small></span></label>'
-      +(m==="hw"?'<small class="t" style="display:block;margin-top:12px">Иконка 🎃 применится к новым установкам. Чтобы сменить значок на главном экране, удалите ярлык и установите приложение заново</small>':"")+"</div>";
+    h+='<div class="box"><h2>Анимация</h2><label class="opt" style="margin-top:0"><input type="checkbox" id="fxc"'+(cfg.fx!==false?" checked":"")+'><span><b>'+(m==="cc"?"Летающие баночки":m==="hw"?"Летающие смайлики":m==="au"?"Падающие листья":"Живой фон")+'</b><br><small class="t">'+(m==="lg"?"Плавающие цветные блики за стеклом":"Движущиеся картинки на фоне")+'</small></span></label>'
+      +((m==="au"||m==="hw")?'<small class="t" style="display:block;margin-top:12px">Иконка '+(m==="hw"?"🎃":"🍂")+' применится к новым установкам. Чтобы сменить значок на главном экране, удалите ярлык и установите приложение заново</small>':"")+"</div>";
   }
   el.innerHTML=h;
   el.onclick=function(e){
     if(e.target.closest("#bk")){go("more");return}
     var b=e.target.closest("[data-m]");
-    if(b){cfg.hw=b.dataset.m==="hw";cfg.cc=b.dataset.m==="cc";cfg.lg=b.dataset.m==="lg";sv("tk412_cfg",cfg);applyTheme();render();renderThemes();return}
+    if(b){cfg.hw=b.dataset.m==="hw";cfg.au=b.dataset.m==="au";cfg.cc=b.dataset.m==="cc";cfg.lg=b.dataset.m==="lg";sv("tk412_cfg",cfg);applyTheme();render();renderThemes();return}
     var c=e.target.closest("[data-th]");
     if(c){cfg.theme=c.dataset.th;sv("tk412_cfg",cfg);applyTheme();renderThemes()}
   };
@@ -452,7 +467,8 @@ function renderLunch(){
 var LABS=[
 {id:"te",t:"Техническая электроника",s:"Рабочая тетрадь 2026 · ЛР 1–9",n0:1,l:["Назначение и возможности Electronic Workbench. Правила ТБ при работе на ПК","Исследование выпрямительного диода","Исследование стабилитрона","Исследование БТ, включённого по схеме с ОБ в статическом режиме","Исследование БТ, включённого по схеме с ОЭ в статическом режиме","Исследование ПТ в статическом режиме","Исследование фотодиода","Исследование оптрона","Исследование БТ, включённого по схеме с ОЭ в нагрузочном режиме"]},
 {id:"met",t:"Метрология и специальные измерения",s:"Тетрадь 1 семестра · ЛР 2–14",n0:2,l:["Изучение работы мер и вспомогательных устройств","Изучение работы вольтметров","Изучение работы НЧ измерительного генератора типа «RC»","Изучение работы электронного осциллографа","Измерение сопротивлений заземлений","Измерение параметров сигналов электронным осциллографом","Измерение сопротивлений омметром и мостом постоянного тока","Изучение работы измерительного генератора широкого диапазона частот","Измерение частоты с помощью осциллографа","Изучение работы цифрового частотомера","Измерение амплитудной характеристики четырёхполюсника","Измерение нелинейных искажений методом подавления основной гармоники","Измерение реактивных сопротивлений мостом переменного тока"]},
-{id:"tes",t:"Теория электрической связи",s:"Тетрадь 2 семестра · ЛР 7–12",n0:7,l:["Исследование моделей помехоустойчивых блочных кодеров","Исследование умножителя частоты","Исследование LC-автогенератора","Исследование RC-автогенератора","Исследование модели DPSK относительно-фазового модулятора (ОФМ)","Исследование детектора АМ сигналов"]}
+{id:"tes",t:"Теория электрической связи",s:"Тетрадь 2 семестра · ЛР 7–12",n0:7,l:["Исследование моделей помехоустойчивых блочных кодеров","Исследование умножителя частоты","Исследование LC-автогенератора","Исследование RC-автогенератора","Исследование модели DPSK относительно-фазового модулятора (ОФМ)","Исследование детектора АМ сигналов"]},
+{id:"okm",t:"Основы компьютерного моделирования сетей и устройств телекоммуникаций",s:"ОКМСиУТК · учёт ЛР 1–18",n0:1,l:["Изучение стандартной модели построения сетей","Изучение структуры и основных функциональных особенностей пользовательского интерфейса программной среды компьютерного моделирования компьютерной сети","Моделирование работы оконечных сетевых устройств","Изучение структуры сетевого коммутатора","Моделирование работы сетевого коммутатора","Изучение структуры сетевого маршрутизатора","Моделирование работы сетевого маршрутизатора","Изучение структуры сети","Изучение работы компьютерной сети","Моделирование работы компьютерной сети","Построение ЛВС","Моделирование работы сети с использованием точки доступа Wi-Fi","Исследование характеристик компьютерной сети","Анализ и моделирование трафика в компьютерной сети","Изучение структуры и основных функциональных особенностей пользовательского интерфейса программной среды моделирования устройств телекоммуникаций","Сигналы и их преобразование при цифровой обработке","Синтез цифровых фильтров","Быстрое преобразование Фурье"]}
 ];
 var lopen=true,labs=ld("tk412_labs",{}),openL={},ex=ld("tk412_ex",{});
 function renderLabs(){
@@ -476,7 +492,7 @@ function renderStip(){
   for(var k=0;list.length<4&&k<16;k++){var d=payDay(t.getFullYear(),t.getMonth()+k);if(d>=t)list.push(d)}
   var nx=list[0],pv=payDay(nx.getFullYear(),nx.getMonth()-1),n=Math.round((nx-t)/864e5),pr=Math.round((t-pv)/(nx-pv)*100);
   var orig=new Date(nx.getFullYear(),nx.getMonth(),21);
-  var h='<h1>'+W("Стипендия")+'</h1><div class="hero"><div class="num">'+(n===0?(cfg.hw?"🎃":"🎉"):n)+'</div><div class="lbl">'+(n===0?W("Стипендия")+" сегодня":pl(n,"день","дня","дней")+(cfg.cc?" до Лас Вегаса":" до стипендии"))+'</div><div class="t" style="margin-top:6px">'+DN[nx.getDay()].toLowerCase()+", "+dm(nx)+"</div></div>";
+  var h='<h1>'+W("Стипендия")+'</h1><div class="hero"><div class="num">'+(n===0?(cfg.hw?"🎃":cfg.au?"🍂":"🎉"):n)+'</div><div class="lbl">'+(n===0?W("Стипендия")+" сегодня":pl(n,"день","дня","дней")+(cfg.cc?" до Лас Вегаса":" до стипендии"))+'</div><div class="t" style="margin-top:6px">'+DN[nx.getDay()].toLowerCase()+", "+dm(nx)+"</div></div>";
   h+='<div class="bar"><i style="width:'+Math.max(0,Math.min(100,pr))+'%"></i></div>';
   if(nx.getDate()!==21)h+='<div class="pair sub" style="cursor:default"><div class="body"><span class="tag">Выплата раньше</span><div class="s">21 '+MO[orig.getMonth()]+" — "+DN[orig.getDay()].toLowerCase()+(isOff(orig)&&orig.getDay()%6!==0?" (праздник)":"")+", поэтому деньги придут "+dm(nx)+"</div></div></div>";
   h+='<div class="box"><h2>Ближайшие выплаты</h2>';
