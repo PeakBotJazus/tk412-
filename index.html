@@ -53,6 +53,7 @@ summary span{display:block;font-weight:400;font-size:12px;color:var(--mut)}
 .it{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--line)}
 .it small{color:var(--mut);display:block}
 .pr{font-weight:650;white-space:nowrap}
+textarea{resize:vertical;max-width:100%;max-height:40vh}
 input,textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px}
 .btns{display:flex;gap:8px;margin-top:10px}
 .btns button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:inherit;cursor:pointer}
@@ -90,7 +91,7 @@ input[type=checkbox]{width:22px;height:22px;padding:0;margin:0;flex:none;accent-
 .ex input{width:150px;margin:0}
 .cd{text-align:right}.cd b{font-size:28px;color:var(--ac);line-height:1}.cd small{display:block;color:var(--mut);font-size:12px}
 .pay{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
-.tabs .b,.tabs .c,.tabs .d{display:none}
+.tabs .b,.tabs .c,.tabs .d,.tabs .e{display:none}
 #fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
 #fx span{position:absolute;top:0;opacity:0;animation:fl linear infinite}
 #fx .web{top:env(safe-area-inset-top,0px);left:0;font-size:72px;opacity:.35;line-height:1;animation:none}
@@ -163,6 +164,23 @@ main>*{max-width:480px;margin-left:auto;margin-right:auto}
 :root[data-hw="1"] h1::after{content:" 🦇"}
 :root[data-hw="1"] .hero .num{animation:pulse 2.4s ease-in-out infinite}
 :root[data-hw="1"] .now{animation:glow 2.4s ease-in-out infinite}
+#list .box{margin:12px 0 18px}
+:root[data-sk="1"]{--bg:#fdf0f5;--card:rgba(255,255,255,.72);--tx:#3b2230;--mut:#8f6b7d;--line:#f2cddb;--ac:#d9437c;--acbg:rgba(217,67,124,.12);--warn:#b45309;--warnbg:#fff0dc;--inp:rgba(255,255,255,.62);--wall:radial-gradient(circle at 12% 6%,rgba(255,255,255,.95) 0,transparent 38%),linear-gradient(180deg,#fff6fa,#fde2ec 60%,#f8cfe0)}
+@media (prefers-color-scheme:dark){:root[data-sk="1"]:not([data-theme="light"]){color-scheme:dark;--bg:#1a1022;--card:rgba(54,31,63,.72);--tx:#fcebf3;--mut:#c9a5b8;--line:#5a3a66;--ac:#ff8fb8;--acbg:rgba(255,143,184,.16);--warn:#ffd27a;--warnbg:rgba(110,70,30,.55);--inp:rgba(0,0,0,.28);--wall:radial-gradient(circle at 14% 7%,rgba(255,236,205,.30) 0,transparent 24%),linear-gradient(180deg,#1a1022,#2b1735 60%,#3c1d42)}}
+:root[data-sk="1"][data-theme="dark"]{color-scheme:dark;--bg:#1a1022;--card:rgba(54,31,63,.72);--tx:#fcebf3;--mut:#c9a5b8;--line:#5a3a66;--ac:#ff8fb8;--acbg:rgba(255,143,184,.16);--warn:#ffd27a;--warnbg:rgba(110,70,30,.55);--inp:rgba(0,0,0,.28);--wall:radial-gradient(circle at 14% 7%,rgba(255,236,205,.30) 0,transparent 24%),linear-gradient(180deg,#1a1022,#2b1735 60%,#3c1d42)}
+:root[data-sk="1"] #fx{background:var(--wall)}
+:root[data-sk="1"] :is(.pair:not(.gap),.box,.subj,.lunch,.link,.menu,.thm,.chip,.wkb,.tabs){-webkit-backdrop-filter:blur(12px) saturate(140%);backdrop-filter:blur(12px) saturate(140%)}
+:root[data-sk="1"] .chip.on{background:var(--ac);border-color:var(--ac);color:#fff}
+:root[data-sk="1"] :is(input,textarea){background:var(--inp)}
+:root[data-sk="1"] .tabs .a{display:none}
+:root[data-sk="1"] .tabs .e{display:block}
+:root[data-sk="1"] #dt::before{content:"🌸 "}
+:root[data-sk="1"] h1::after{content:" 🌸"}
+:root[data-sk="1"] .now{animation:glow 2.6s ease-in-out infinite}
+#fx .branch{position:absolute;top:env(safe-area-inset-top,0px);right:0;width:min(100vw,440px);height:auto;pointer-events:none;filter:drop-shadow(0 6px 14px rgba(150,50,100,.2))}
+#fx .branch.b2{top:auto;bottom:74px;left:0;right:auto;width:min(70vw,290px);transform:rotate(180deg);opacity:.55}
+#fx .kj{position:absolute;right:14px;bottom:96px;font:700 150px/1 "Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;writing-mode:vertical-rl;opacity:.07;color:var(--ac);pointer-events:none}
+#fx .pt{animation-name:fall;background:linear-gradient(135deg,#fff0f6,#ff9ec4);border-radius:80% 0 80% 0;box-shadow:0 1px 3px rgba(190,60,110,.25)}
 .hint{font-size:12px;color:var(--mut);margin-top:16px;text-align:center}
 </style>
 </head>
@@ -189,18 +207,18 @@ main>*{max-width:480px;margin-left:auto;margin-right:auto}
 </section>
 </main>
 <nav class="tabs" id="tabs">
-<button data-t="sched" id="t-sched" class="on"><i class="a">📅</i><i class="b">🍂</i><i class="d">🎃</i><i class="c">🥭</i><span id="l-sched">Расписание</span></button>
-<button data-t="labs" id="t-labs"><i class="a">🧪</i><i class="b">🍄</i><i class="d">🔮</i><i class="c">🍍</i><span id="l-labs">Лабы</span></button>
-<button data-t="stip" id="t-stip"><i class="a">💰</i><i class="b">🌰</i><i class="d">🍬</i><i class="c">🎰</i><span id="l-stip">Стипендия</span></button>
-<button data-t="exam" id="t-exam"><i class="a">📝</i><i class="b">🍁</i><i class="d">👻</i><i class="c">🌴</i><span id="l-exam">Сессия</span></button>
-<button data-t="more" id="t-more"><i class="a">⚙️</i><i class="b">🍃</i><i class="d">🕷️</i><i class="c">🥥</i><span id="l-more">Ещё</span></button>
+<button data-t="sched" id="t-sched" class="on"><i class="a">📅</i><i class="b">🍂</i><i class="d">🎃</i><i class="e">🌸</i><i class="c">🥭</i><span id="l-sched">Расписание</span></button>
+<button data-t="labs" id="t-labs"><i class="a">🧪</i><i class="b">🍄</i><i class="d">🔮</i><i class="e">🏮</i><i class="c">🍍</i><span id="l-labs">Лабы</span></button>
+<button data-t="stip" id="t-stip"><i class="a">💰</i><i class="b">🌰</i><i class="d">🍬</i><i class="e">💴</i><i class="c">🎰</i><span id="l-stip">Стипендия</span></button>
+<button data-t="exam" id="t-exam"><i class="a">📝</i><i class="b">🍁</i><i class="d">👻</i><i class="e">⛩️</i><i class="c">🌴</i><span id="l-exam">Сессия</span></button>
+<button data-t="more" id="t-more"><i class="a">⚙️</i><i class="b">🍃</i><i class="d">🕷️</i><i class="e">🎋</i><i class="c">🥥</i><span id="l-more">Ещё</span></button>
 </nav>
 <script>
 // [предмет, преподаватель, кабинет, неделя: "в" верхняя / "н" нижняя / пусто — каждую]
 var S={
-1:{2:[["НСТК","Емельянов Сергей Владимирович","110","н"]],3:[["ТЭС","Бочарова Елена Владимировна","406"]],4:[["ОКМСиУТК","Мацкевич Мария Николаевна","204"]],5:[["ЦиМПУ","Васина Светлана Александровна","407"]]},
+1:{2:[["НСТК","Емельянов Сергей Владимирович","110","в"]],3:[["ТЭС","Бочарова Елена Владимировна","406"]],4:[["ОКМСиУТК","Мацкевич Мария Николаевна","204"]],5:[["ЦиМПУ","Васина Светлана Александровна","407"]]},
 2:{2:[["Физ.культура","Шеряков П.В., Терещенко Н.Л.","спортзал"]],3:[["Техн. электрон.","Бедан Елена Михайловна","204"]],4:[["Метр. и сп. изм.","Шевченко Ольга Владимировна","203"]]},
-3:{3:[["ОКМСиУТК","Мацкевич Мария Николаевна","204"]],4:[["ТУ СТ","Ерошевич Марина Юрьевна","408"]],5:[["Метр. и сп. изм.","Шевченко Ольга Владимировна","203"]],6:[["Физ.культура","Шеряков П.В., Терещенко Н.Л.","спортзал","в"]]},
+3:{3:[["ОКМСиУТК","Мацкевич Мария Николаевна","204"]],4:[["ТУ СТ","Ерошевич Марина Юрьевна","408"]],5:[["Метр. и сп. изм.","Шевченко Ольга Владимировна","203"]],6:[["Физ.культура","Шеряков П.В., Терещенко Н.Л.","спортзал","н"]]},
 4:{2:[["НСТК","Емельянов Сергей Владимирович","110"]],3:[["ОКМСиУТК","Мацкевич Мария Николаевна","116","в"],["Техн. электрон.","Бедан Елена Михайловна","204","н"]],4:[["ОПСиСТ","Шпакова Анна Олеговна","407"]]},
 5:{2:[["ЦиМПУ","Васина Светлана Александровна","203"]],3:[["Метр. и сп. изм.","Шевченко Ольга Владимировна","414"]],4:[["ТУ СТ","Ерошевич Марина Юрьевна","408","в"],["ТЭС","Бочарова Елена Владимировна","406","н"]]},
 6:{1:[["ТЭС","Бочарова Елена Владимировна","406"]],2:[["НСТК","Емельянов Сергей Владимирович","414"]],3:[["ОПСиСТ","Шпакова Анна Олеговна","407"]]}
@@ -248,7 +266,7 @@ function render(){
   ch.onclick=function(e){var b=e.target.closest("[data-d]");if(b){sel=+b.dataset.d;render()}};
   var day={},T=sel===6?TS:TW,ds={},mins=now.getHours()*60+now.getMinutes();
   Object.keys(S[sel]).forEach(function(n){var a=S[sel][n].filter(function(x){return!x[3]||x[3]===w});if(a.length)day[n]=a});
-  var rm=remote[k]||{};(rm.cancel||[]).forEach(function(n){if(day[n])ds[n]="Пары нет"});Object.keys(rm.pairs||{}).forEach(function(n){ds[n]=rm.pairs[n]});Object.assign(ds,subs[k]||{});
+  var rm=remote[k]||{};(rm.cancel||[]).forEach(function(n){if(day[n])ds[n]="Пары нет"});Object.keys(rm.pairs||{}).forEach(function(n){if(!weekNote(sel,n,rm.pairs[n]))ds[n]=rm.pairs[n]});Object.assign(ds,subs[k]||{});
   var all=Object.keys(day).concat(Object.keys(ds)).map(Number),h=rm.only?'<div class="pair sub"><div class="body"><span class="tag">Замена на день</span><div class="s">Только: '+esc(rm.only)+"</div></div></div>":"";
   var sm=cfg.smg&&SMG[sel]?SMG[sel]:null,smShown=false;
   function smg(){smShown=true;return '<div class="pair'+(isToday&&mins>=sm[0]&&mins<sm[1]?" now":"")+'"><div class="n">+</div><div class="body"><div class="tm">'+hm(sm[0])+"–"+hm(sm[1])+'</div><div class="row"><div><div class="s">Физкультура (СМГ)</div><div class="t">дополнительное занятие</div></div><div class="r">СМГ №3</div></div></div></div>'}
@@ -277,27 +295,58 @@ function applyTheme(){var r=document.documentElement;if(cfg.theme==="auto")r.rem
   if(cfg.au)r.setAttribute("data-au","1");else r.removeAttribute("data-au");
   if(cfg.lg)r.setAttribute("data-lg","1");else r.removeAttribute("data-lg");
   if(cfg.cc)r.setAttribute("data-cc","1");else r.removeAttribute("data-cc");
+  if(cfg.sk)r.setAttribute("data-sk","1");else r.removeAttribute("data-sk");
   DN=cfg.cc?DNC:DN0;
   var tl={sched:"Расписание",labs:"Лабы",stip:"Стипендия",exam:"Сессия",more:"Ещё"};
   for(var k in tl){var e1=document.getElementById("l-"+k);if(e1)e1.textContent=W(tl[k])}
   var e2=document.getElementById("h-more");if(e2)e2.textContent=W("Ещё");
   var e3=document.getElementById("pl");if(e3)e3.textContent=W("Платформа удалённого обучения");
   fx();icons()}
+function isDark(){try{return cfg.theme==="dark"||(cfg.theme==="auto"&&window.matchMedia("(prefers-color-scheme: dark)").matches)}catch(e){return false}}
 function icons(){
   if(!document.querySelector)return;var au=!!cfg.au,hw=!!cfg.hw;
   function at(q,a,v){var e=document.querySelector(q);if(e)e.setAttribute(a,v)}
   at('link[rel="manifest"]',"href",hw?"manifest-hw.webmanifest":au?"manifest-au.webmanifest":"manifest.webmanifest");
   at('link[rel="icon"]',"href",hw?"icon-hw-192.png":au?"icon-au-192.png":"icon-192.png");
   at('link[rel="apple-touch-icon"]',"href",hw?"icon-hw-180.png":au?"icon-au-180.png":"icon-180.png");
-  at('meta[name="theme-color"]',"content",hw?"#140a1f":au?"#2a1710":(cfg.cc?"#0a3f8f":(cfg.lg?"#6a8fd8":"#2f6fed")));
+  at('meta[name="theme-color"]',"content",hw?"#140a1f":au?"#2a1710":(cfg.sk?(isDark()?"#1a1022":"#fdf0f5"):(cfg.cc?"#0a3f8f":(cfg.lg?"#6a8fd8":"#2f6fed"))));
+}
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function bez(b,t){var u=1-t;return[u*u*u*b[0][0]+3*u*u*t*b[1][0]+3*u*t*t*b[2][0]+t*t*t*b[3][0],u*u*u*b[0][1]+3*u*u*t*b[1][1]+3*u*t*t*b[2][1]+t*t*t*b[3][1]]}
+// ветка сакуры: изогнутые ветви и цветы (используют общий символ #skf)
+function sakuraSvg(seed,cls){
+  var R=rng(seed),br=[
+    [[450,8],[360,30],[300,80],[210,100],9],[[210,100],[150,115],[100,150],[30,148],6],
+    [[330,46],[322,100],[292,140],[250,190],4.5],[[250,190],[236,215],[226,240],[200,268],3],
+    [[160,108],[150,62],[170,30],[150,-6],3.5],[[110,148],[100,185],[80,210],[62,236],3],[[300,62],[270,40],[240,40],[220,10],2.6]],
+    C=["#ffc4da","#ffadc9","#ff9bbd","#ffd9e6","#ffb3cf","#fff1f6","#ff8fb5"],
+    o='<svg class="branch '+(cls||"")+'" viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
+  br.forEach(function(b){o+='<path d="M'+b[0]+' C'+b[1]+' '+b[2]+' '+b[3]+'" fill="none" stroke="#4a2e2b" stroke-width="'+b[4]+'" stroke-linecap="round"/>'});
+  br.forEach(function(b){
+    var n=Math.round(b[4]*1.1)+1;
+    for(var i=0;i<n;i++){
+      var t=(i+R()*.9)/n,p=bez(b,Math.min(1,t)),k=1+(R()*2|0);
+      for(var m=0;m<k;m++)o+='<use href="#skf" transform="translate('+(p[0]+(R()-.5)*22).toFixed(1)+' '+(p[1]+(R()-.5)*18).toFixed(1)+') rotate('+(R()*360|0)+') scale('+(.5+R()*.5).toFixed(2)+')" style="color:'+C[R()*C.length|0]+'"/>';
+    }
+    o+='<circle cx="'+b[3][0]+'" cy="'+b[3][1]+'" r="'+(b[4]*.7+1.2).toFixed(1)+'" fill="#ff8fb5"/>';
+  });
+  return o+'</svg>';
 }
 function fx(){
   var e=document.getElementById("fx");if(!e)return;e.innerHTML="";
-  if(!(cfg.hw||cfg.au||cfg.cc||cfg.lg))return;
+  if(!(cfg.hw||cfg.au||cfg.cc||cfg.lg||cfg.sk))return;
   if(cfg.lg){
     var P=[["--o1","-12%","-8%",300,22],["--o2","48%","22%",340,26],["--o3","-6%","58%",320,24]],g="";
     P.forEach(function(x){g+='<span class="orb" style="left:'+x[1]+';top:'+x[2]+';width:'+x[3]+'px;height:'+x[3]+'px;background:var('+x[0]+');animation-duration:'+x[4]+'s'+(cfg.fx===false?';animation:none':'')+'"></span>'});
     e.innerHTML=g;return}
+  if(cfg.sk){
+    var sg='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><g id="skf">';
+    for(var j=0;j<5;j++)sg+='<path transform="rotate('+(j*72)+')" d="M0 0C-5-4-5.5-11-2-12.5L0-10.6 2-12.5C5.5-11 5-4 0 0Z" fill="currentColor" stroke="rgba(214,90,140,.4)" stroke-width=".35"/>';
+    sg+='<circle r="1.7" fill="#e0457b"/>';
+    for(j=0;j<5;j++)sg+='<circle cx="'+(Math.cos(j*1.2566)*3).toFixed(1)+'" cy="'+(Math.sin(j*1.2566)*3).toFixed(1)+'" r=".55" fill="#ffd166"/>';
+    sg+='</g></defs></svg>'+sakuraSvg(7,"")+sakuraSvg(21,"b2")+'<div class="kj">桜</div>';
+    if(cfg.fx!==false)for(var q2=0;q2<16;q2++){var pw=9+(Math.random()*7|0);sg+='<span class="pt" style="left:'+(Math.random()*96|0)+'%;width:'+pw+'px;height:'+Math.round(pw*.8)+'px;animation-duration:'+(12+(Math.random()*13|0))+'s;animation-delay:-'+(Math.random()*24|0)+'s"></span>'}
+    e.innerHTML=sg;return}
   if(cfg.fx===false)return;
   if(cfg.cc){
     if(e.style&&e.style.setProperty)e.style.setProperty("--can","url("+CAN+")");
@@ -315,7 +364,7 @@ function fx(){
 }
 function renderSet(){
   var el=document.getElementById("set");
-  var cur=cfg.hw?"Хэллоуин 🎃":cfg.au?"Осень 🍂":cfg.cc?"Coconut 🥥":cfg.lg?"Liquid Glass 🫧":"Обычная · "+({light:"светлая",dark:"тёмная"}[cfg.theme]||"как в системе");
+  var cur=cfg.hw?"Хэллоуин 🎃":cfg.au?"Осень 🍂":cfg.cc?"Coconut 🥥":cfg.lg?"Liquid Glass 🫧":cfg.sk?"Sakura 🌸":"Обычная · "+({light:"светлая",dark:"тёмная"}[cfg.theme]||"как в системе");
   el.innerHTML='<div class="box" style="margin:0 0 12px"><h2>Настройки</h2><label class="opt" style="margin-top:0"><input type="checkbox" id="smg"'+(cfg.smg?" checked":"")+'><span><b>Я в СМГ по физкультуре</b><br><small class="t">Добавит занятия СМГ №3: вт и чт 9:25–10:20, сб 13:45–14:30</small></span></label><label class="opt"><input type="checkbox" id="pn"><span><b>Уведомления о заменах</b><br><small class="t" id="pns"></small></span></label><button class="l" id="pt" style="margin:8px 0 0 34px;display:none">Отправить тест</button></div>'
    +'<button class="menu" id="gt"><span><b>Темы оформления</b><small>Сейчас: '+cur+'</small></span><i>›</i></button>';
   el.querySelector("#gt").onclick=function(){go("themes")};
@@ -325,25 +374,25 @@ function renderSet(){
   el.querySelector("#smg").onchange=function(){cfg.smg=this.checked;sv("tk412_cfg",cfg);autoDay();render()};
 }
 function renderThemes(){
-  var el=document.getElementById("v-themes"),m=cfg.hw?"hw":cfg.au?"au":cfg.cc?"cc":cfg.lg?"lg":"none";
+  var el=document.getElementById("v-themes"),m=cfg.hw?"hw":cfg.au?"au":cfg.cc?"cc":cfg.lg?"lg":cfg.sk?"sk":"none";
   var h='<button class="back" id="bk">‹ '+W("Ещё")+'</button><h1>Оформление</h1><div class="date">Темы</div><div class="th">';
-  [["none","🎨","Обычная","Светлая, тёмная или как в системе"],["lg","🫧","Liquid Glass","Полупрозрачное стекло в духе iOS: размытие, блики и мягкий живой фон"],["hw","🎃","Хэллоуин","Тёмно-фиолетовый фон, летучие мыши, привидения и тыквы"],["au","🍂","Осень","Тёплые коричнево-оранжевые цвета и падающие листья"],["cc","🥥","Coconut","Синий и оранжевый, как на банке Gorilla Mango Coconut. Меняет названия разделов и дней"]].forEach(function(x){
+  [["none","🎨","Обычная","Светлая, тёмная или как в системе"],["lg","🫧","Liquid Glass","Полупрозрачное стекло в духе iOS: размытие, блики и мягкий живой фон"],["hw","🎃","Хэллоуин","Тёмно-фиолетовый фон, летучие мыши, привидения и тыквы"],["au","🍂","Осень","Тёплые коричнево-оранжевые цвета и падающие листья"],["sk","🌸","Sakura","Японская весна: цветущая сакура и падающие лепестки. Светлая и тёмная"],["cc","🥥","Coconut","Синий и оранжевый, как на банке Gorilla Mango Coconut. Меняет названия разделов и дней"]].forEach(function(x){
     h+='<button class="thm'+(m===x[0]?" on":"")+'" data-m="'+x[0]+'"><i>'+x[1]+"</i><span><b>"+x[2]+"</b><small>"+x[3]+"</small></span><em>"+(m===x[0]?"✓":"")+"</em></button>"});
   h+="</div>";
-  if(m==="none"||m==="lg"){
+  if(m==="none"||m==="lg"||m==="sk"){
     h+='<div class="box"><h2>Цвета</h2><div class="seg">';
     [["auto","Как в системе"],["light","Светлая"],["dark","Тёмная"]].forEach(function(x){h+='<button class="chip'+(cfg.theme===x[0]?" on":"")+'" data-th="'+x[0]+'">'+x[1]+"</button>"});
     h+="</div></div>";
   }
   if(m!=="none"){
-    h+='<div class="box"><h2>Анимация</h2><label class="opt" style="margin-top:0"><input type="checkbox" id="fxc"'+(cfg.fx!==false?" checked":"")+'><span><b>'+(m==="cc"?"Летающие баночки":m==="hw"?"Летающие смайлики":m==="au"?"Падающие листья":"Живой фон")+'</b><br><small class="t">'+(m==="lg"?"Плавающие цветные блики за стеклом":"Движущиеся картинки на фоне")+'</small></span></label>'
+    h+='<div class="box"><h2>Анимация</h2><label class="opt" style="margin-top:0"><input type="checkbox" id="fxc"'+(cfg.fx!==false?" checked":"")+'><span><b>'+(m==="cc"?"Летающие баночки":m==="hw"?"Летающие смайлики":m==="au"?"Падающие листья":m==="sk"?"Падающие лепестки":"Живой фон")+'</b><br><small class="t">'+(m==="lg"?"Плавающие цветные блики за стеклом":"Движущиеся картинки на фоне")+'</small></span></label>'
       +((m==="au"||m==="hw")?'<small class="t" style="display:block;margin-top:12px">Иконка '+(m==="hw"?"🎃":"🍂")+' применится к новым установкам. Чтобы сменить значок на главном экране, удалите ярлык и установите приложение заново</small>':"")+"</div>";
   }
   el.innerHTML=h;
   el.onclick=function(e){
     if(e.target.closest("#bk")){go("more");return}
     var b=e.target.closest("[data-m]");
-    if(b){cfg.hw=b.dataset.m==="hw";cfg.au=b.dataset.m==="au";cfg.cc=b.dataset.m==="cc";cfg.lg=b.dataset.m==="lg";sv("tk412_cfg",cfg);applyTheme();render();renderThemes();return}
+    if(b){cfg.hw=b.dataset.m==="hw";cfg.au=b.dataset.m==="au";cfg.cc=b.dataset.m==="cc";cfg.lg=b.dataset.m==="lg";cfg.sk=b.dataset.m==="sk";sv("tk412_cfg",cfg);applyTheme();render();renderThemes();return}
     var c=e.target.closest("[data-th]");
     if(c){cfg.theme=c.dataset.th;sv("tk412_cfg",cfg);applyTheme();renderThemes()}
   };
@@ -351,12 +400,17 @@ function renderThemes(){
   if(f)f.onchange=function(){cfg.fx=this.checked;sv("tk412_cfg",cfg);applyTheme()};
 }
 // конец последней пары дня: с учётом недели, замен (в т.ч. «пары нет»), СМГ
+function weekNote(dow,n,t){ // замена, где просто повторён предмет и сказано про верхнюю/нижнюю неделю
+  if(!/верхн|нижн/i.test(t))return false;
+  var it=S[dow]&&S[dow][n];if(!it)return false;
+  return it.some(function(x){return t.trim().toLowerCase().indexOf(x[0].toLowerCase())===0});
+}
 function lastEnd(d){
   var dow=d.getDay();if(dow===0)return 0;
   var k=key(d),w=upper(d)?"в":"н",T=dow===6?TS:TW,rm=remote[k]||{},ds={},all={},end=0;
   Object.keys(S[dow]).forEach(function(n){if(S[dow][n].some(function(x){return!x[3]||x[3]===w}))all[n]=1});
   (rm.cancel||[]).forEach(function(n){if(all[n])ds[n]="нет"});
-  Object.keys(rm.pairs||{}).forEach(function(n){ds[n]=rm.pairs[n];all[n]=1});
+  Object.keys(rm.pairs||{}).forEach(function(n){if(weekNote(dow,n,rm.pairs[n]))return;ds[n]=rm.pairs[n];all[n]=1});
   Object.keys(subs[k]||{}).forEach(function(n){ds[n]=subs[k][n];all[n]=1});
   Object.keys(all).forEach(function(n){var t=ds[n];if(t&&/^\s*(пар[аы]?\s+)?нет\s*$/i.test(t))return;if(T[n]&&T[n][1]>end)end=T[n][1]});
   if(cfg.smg&&SMG[dow]&&SMG[dow][1]>end)end=SMG[dow][1];
